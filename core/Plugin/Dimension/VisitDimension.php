@@ -352,5 +352,4 @@ abstract class VisitDimension extends Dimension
 
         return $instances;
     }
-
 }

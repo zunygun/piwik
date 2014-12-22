@@ -9,6 +9,7 @@
 namespace Piwik\Tracker;
 
 use Exception;
+use Piwik\Columns\Dimension;
 use Piwik\Common;
 use Piwik\Date;
 use Piwik\Piwik;
@@ -298,6 +299,8 @@ class GoalManager
             Common::printDebug("There is an existing cart for this visit");
         }
 
+        $conversionDimensions = ConversionDimension::getAllDimensions();
+
         if ($this->isGoalAnOrder) {
             $debugMessage = 'The conversion is an Ecommerce order';
 
@@ -305,7 +308,6 @@ class GoalManager
             $conversion['idgoal']  = self::IDGOAL_ORDER;
             $conversion['buster']  = Common::hashStringToInt($this->orderId);
 
-            $conversionDimensions = ConversionDimension::getAllDimensions();
             $conversion = $this->triggerHookOnDimensions($conversionDimensions, 'onEcommerceOrderConversion', $visitor, $action, $conversion);
         } // If Cart update, select current items in the previous Cart
         else {
@@ -314,7 +316,6 @@ class GoalManager
             $conversion['buster'] = 0;
             $conversion['idgoal'] = self::IDGOAL_CART;
 
-            $conversionDimensions = ConversionDimension::getAllDimensions();
             $conversion = $this->triggerHookOnDimensions($conversionDimensions, 'onEcommerceCartUpdateConversion', $visitor, $action, $conversion);
         }
 
@@ -333,6 +334,8 @@ class GoalManager
         }
 
         $conversion['items'] = $itemsCount;
+
+        Dimension::prepareDimensionValuesForPersistence($conversionDimensions, $conversion);
 
         if ($this->isThereExistingCartInVisit) {
             $recorded = $this->getModel()->updateConversion($visitInformation['idvisit'], self::IDGOAL_CART, $conversion);

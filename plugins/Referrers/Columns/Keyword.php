@@ -42,11 +42,6 @@ class Keyword extends Base
     public function onNewVisit(Request $request, Visitor $visitor, $action)
     {
         $information = $this->getReferrerInformationFromRequest($request);
-
-        if (!empty($information['referer_keyword'])) {
-            return substr($information['referer_keyword'], 0, 255);
-        }
-
         return $information['referer_keyword'];
     }
 
@@ -59,5 +54,10 @@ class Keyword extends Base
     public function onAnyGoalConversion(Request $request, Visitor $visitor, $action)
     {
         return $this->getValueForRecordGoal($request, $visitor);
+    }
+
+    public function prepareDimensionValueForPersistence($value)
+    {
+        return substr($value, 0, 255);
     }
 }

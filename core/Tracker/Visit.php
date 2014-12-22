@@ -9,6 +9,7 @@
 
 namespace Piwik\Tracker;
 
+use Piwik\Columns\Dimension;
 use Piwik\Common;
 use Piwik\Config;
 use Piwik\DataAccess\ArchiveInvalidator;
@@ -437,6 +438,8 @@ class Visit implements VisitInterface
      */
     protected function updateExistingVisit($valuesToUpdate)
     {
+        $this->prepareDimensionValuesForPersistence($valuesToUpdate);
+
         $idSite  = $this->request->getIdSite();
         $idVisit = (int) $this->visitorInfo['idvisit'];
 
@@ -603,6 +606,8 @@ class Visit implements VisitInterface
 
     protected function insertNewVisit($visit)
     {
+        $this->prepareDimensionValuesForPersistence($visit);
+
         return $this->getModel()->createVisit($visit);
     }
 
@@ -649,5 +654,11 @@ class Visit implements VisitInterface
             $invalidReport = new ArchiveInvalidator();
             $invalidReport->rememberToInvalidateArchivedReportsLater($idSite, $date);
         }
+    }
+
+    private function prepareDimensionValuesForPersistence(&$dimensionValues)
+    {
+        $dimensions = $this->getAllVisitDimensions();
+        Dimension::prepareDimensionValuesForPersistence($dimensions, $dimensionValues);
     }
 }

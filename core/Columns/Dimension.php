@@ -240,4 +240,36 @@ abstract class Dimension
         $parts = explode('.', $id);
         return reset($parts);
     }
+
+    /**
+     * Prepare a dimension value found in a tracker request for persistence in MySQL. Dimensions
+     * should use this method to, for example, truncate values that are too long for their MySQL
+     * database columns.
+     *
+     * Note: This method may be removed if/when a proper data access layer is added to Piwik.
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    public function prepareDimensionValueForPersistence($value)
+    {
+        return $value;
+    }
+
+    /**
+     * Helper function for the tracker. Calls prepareDimensionValueForPersistence() on dimensions that
+     * are present in $dimensionValues.
+     * @param Dimension[] $dimensions
+     * @param array $dimensionValues
+     * @ignore
+     */
+    public static function prepareDimensionValuesForPersistence($dimensions, &$dimensionValues)
+    {
+        foreach ($dimensions as $dimension) {
+            $dimensionName = $dimension->getColumnName();
+            if (isset($dimensionValues[$dimensionName])) {
+                $dimensionValues[$dimensionName] = $dimension->prepareDimensionValueForPersistence($dimensionValues[$dimensionName]);
+            }
+        }
+    }
 }

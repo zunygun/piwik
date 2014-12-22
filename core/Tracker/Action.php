@@ -10,6 +10,7 @@
 namespace Piwik\Tracker;
 
 use Exception;
+use Piwik\Columns\Dimension;
 use Piwik\Common;
 use Piwik\Piwik;
 use Piwik\Plugin\Dimension\ActionDimension;
@@ -377,6 +378,8 @@ abstract class Action
         }
 
         $visitAction = array_merge($visitAction, $customVariables);
+
+        Dimension::prepareDimensionValuesForPersistence($dimensions, $visitAction);
 
         $this->idLinkVisitAction = $this->getModel()->createAction($visitAction);
 

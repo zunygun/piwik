@@ -36,12 +36,6 @@ class ReferrerName extends Base
     public function onNewVisit(Request $request, Visitor $visitor, $action)
     {
         $information = $this->getReferrerInformationFromRequest($request);
-
-        if (!empty($information['referer_name'])) {
-
-            return substr($information['referer_name'], 0, 70);
-        }
-
         return $information['referer_name'];
     }
 
@@ -54,5 +48,10 @@ class ReferrerName extends Base
     public function onAnyGoalConversion(Request $request, Visitor $visitor, $action)
     {
         return $this->getValueForRecordGoal($request, $visitor);
+    }
+
+    public function prepareDimensionValueForPersistence($value)
+    {
+        return substr($value, 0, 70);
     }
 }
