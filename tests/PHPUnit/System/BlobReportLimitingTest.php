@@ -23,12 +23,6 @@ class BlobReportLimitingTest extends SystemTestCase
 {
     public static $fixture = null; // initialized below class definition
 
-    public static function setUpBeforeClass()
-    {
-        self::setUpConfigOptions();
-        parent::setUpBeforeClass();
-    }
-
     public function getApiForTesting()
     {
         // TODO: test Provider plugin? Not sure if it's possible.
@@ -91,6 +85,7 @@ class BlobReportLimitingTest extends SystemTestCase
      */
     public function testApi($api, $params)
     {
+        echo Config::getInstance()->General['datatable_archiving_maximum_rows_referers']."\n\n";
         $this->runApiTests($api, $params);
     }
 
@@ -143,10 +138,8 @@ class BlobReportLimitingTest extends SystemTestCase
         return 'reportLimiting';
     }
 
-    protected static function setUpConfigOptions()
+    protected static function onEnvironmentSetUp()
     {
-        Config::getInstance()->setTestEnvironment();
-
         $generalConfig =& Config::getInstance()->General;
         $generalConfig['datatable_archiving_maximum_rows_referers'] = 3;
         $generalConfig['datatable_archiving_maximum_rows_subtable_referers'] = 2;
@@ -160,4 +153,3 @@ class BlobReportLimitingTest extends SystemTestCase
 }
 
 BlobReportLimitingTest::$fixture = new ManyVisitsWithMockLocationProvider();
-BlobReportLimitingTest::$fixture->createConfig = false;

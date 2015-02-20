@@ -65,10 +65,19 @@ abstract class SystemTestCase extends PHPUnit_Framework_TestCase
         $fixture->testCaseClass = get_called_class();
 
         try {
-            $fixture->performSetUp();
+            $fixture->setupEnvironment();
+
+            static::onEnvironmentSetUp();
+
+            $fixture->setUpFixture();
         } catch (Exception $e) {
             static::fail("Failed to setup fixture: " . $e->getMessage() . "\n" . $e->getTraceAsString());
         }
+    }
+
+    protected static function onEnvironmentSetUp()
+    {
+        // empty
     }
 
     public static function tearDownAfterClass()

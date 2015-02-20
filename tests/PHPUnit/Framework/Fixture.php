@@ -12,6 +12,7 @@ use Piwik\Cache\Backend\File;
 use Piwik\Cache as PiwikCache;
 use Piwik\Common;
 use Piwik\Config;
+use Piwik\Container\StaticContainer;
 use Piwik\DataAccess\ArchiveTableCreator;
 use Piwik\DataTable\Manager as DataTableManager;
 use Piwik\Date;
@@ -138,7 +139,7 @@ class Fixture extends \PHPUnit_Framework_Assert
         return Config::getInstance()->database_tests['dbname'];
     }
 
-    public function performSetUp($setupEnvironmentOnly = false)
+    public function setupEnvironment()
     {
         try {
             if ($this->createConfig) {
@@ -231,15 +232,20 @@ class Fixture extends \PHPUnit_Framework_Assert
             self::createSuperUser($this->removeExistingSuperUser);
         }
 
-        if ($setupEnvironmentOnly) {
-            return;
-        }
-
         $this->getTestEnvironment()->save();
         $this->getTestEnvironment()->executeSetupTestEnvHook();
         Piwik_TestingEnvironment::addSendMailHook();
 
         PiwikCache::getTransientCache()->flushAll();
+    }
+
+    public function setUpFixture($setupEnvironmentOnly = false)
+    {
+        $this->setupEnvironment();
+
+        if ($setupEnvironmentOnly) {
+            return;
+        }
 
         if ($this->overwriteExisting
             || !$this->isFixtureSetUp()
@@ -251,6 +257,14 @@ class Fixture extends \PHPUnit_Framework_Assert
         } else {
             $this->log("Using existing database {$this->dbName}.");
         }
+    }
+
+    /**
+     * @deprecated
+     */
+    public function performSetUp($setupEnvironmentOnly = false)
+    {
+        $this->setUpFixture($setupEnvironmentOnly);
     }
 
     public function getTestEnvironment()
