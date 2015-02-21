@@ -21,7 +21,6 @@ use Piwik\Log;
 use Piwik\Option;
 use Piwik\Piwik;
 use Piwik\Plugin;
-use Piwik\Singleton;
 use Piwik\Theme;
 use Piwik\Tracker;
 use Piwik\Translation\Translator;
@@ -34,10 +33,8 @@ require_once PIWIK_INCLUDE_PATH . '/core/EventDispatcher.php';
 
 /**
  * The singleton that manages plugin loading/unloading and installation/uninstallation.
- *
- * @method static Manager getInstance()
  */
-class Manager extends Singleton
+class Manager
 {
     protected $pluginsToLoad = array();
 
@@ -93,6 +90,19 @@ class Manager extends Singleton
     private $trackerPluginsNotToLoad = array();
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * TODO
+     */
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * Loads plugin that are enabled
      */
     public function loadActivatedPlugins()
@@ -106,7 +116,7 @@ class Manager extends Singleton
      */
     public function loadCorePluginsDuringTracker()
     {
-        $pluginsToLoad = Config::getInstance()->Plugins['Plugins'];
+        $pluginsToLoad = $this->config->Plugins['Plugins'];
         $pluginsToLoad = array_diff($pluginsToLoad, $this->getTrackerPluginsNotToLoad());
         $this->loadPlugins($pluginsToLoad);
     }
@@ -206,9 +216,9 @@ class Manager extends Singleton
     private function updatePluginsConfig($pluginsToLoad)
     {
         $pluginsToLoad = $this->sortPluginsSameOrderAsGlobalConfig($pluginsToLoad);
-        $section = PiwikConfig::getInstance()->Plugins;
+        $section = $this->config->Plugins;
         $section['Plugins'] = $pluginsToLoad;
-        PiwikConfig::getInstance()->Plugins = $section;
+        $this->config->Plugins = $section;
     }
 
     /**
@@ -218,16 +228,16 @@ class Manager extends Singleton
      */
     private function updatePluginsInstalledConfig($plugins)
     {
-        $section = PiwikConfig::getInstance()->PluginsInstalled;
+        $section = $this->config->PluginsInstalled;
         $section['PluginsInstalled'] = $plugins;
-        PiwikConfig::getInstance()->PluginsInstalled = $section;
+        $this->config->PluginsInstalled = $section;
     }
 
     public function clearPluginsInstalledConfig()
     {
         $this->updatePluginsInstalledConfig( array() );
-        PiwikConfig::getInstance()->forceSave();
-        PiwikConfig::getInstance()->init();
+        $this->config->forceSave();
+        $this->config->init();
     }
 
     /**
@@ -449,7 +459,7 @@ class Manager extends Singleton
      */
     public function activatePlugin($pluginName)
     {
-        $plugins = PiwikConfig::getInstance()->Plugins['Plugins'];
+        $plugins = $this->config->Plugins['Plugins'];
         if (in_array($pluginName, $plugins)) {
             throw new \Exception("Plugin '$pluginName' already activated.");
         }
@@ -472,7 +482,7 @@ class Manager extends Singleton
         $this->pluginsToLoad[] = $pluginName;
 
         $this->updatePluginsConfig($this->pluginsToLoad);
-        PiwikConfig::getInstance()->forceSave();
+        $this->config->forceSave();
 
         $this->clearCache($pluginName);
 
@@ -575,7 +585,7 @@ class Manager extends Singleton
 
         $listPlugins = array_merge(
             $this->readPluginsDirectory(),
-            PiwikConfig::getInstance()->Plugins['Plugins']
+            $this->config->Plugins['Plugins']
         );
         $listPlugins = array_unique($listPlugins);
         foreach ($listPlugins as $pluginName) {
@@ -779,7 +789,7 @@ class Manager extends Singleton
 
     public function getActivatedPluginsFromConfig()
     {
-        $plugins = Config::getInstance()->Plugins['Plugins'];
+        $plugins = $this->config->Plugins['Plugins'];
 
         return $this->makePluginsToLoad($plugins);
     }
@@ -989,7 +999,7 @@ class Manager extends Singleton
      */
     public function getInstalledPluginsName()
     {
-        $pluginNames = PiwikConfig::getInstance()->PluginsInstalled['PluginsInstalled'];
+        $pluginNames = $this->config->PluginsInstalled['PluginsInstalled'];
         return $pluginNames;
     }
 
@@ -1003,8 +1013,8 @@ class Manager extends Singleton
     public function getMissingPlugins()
     {
         $missingPlugins = array();
-        if (isset(PiwikConfig::getInstance()->Plugins['Plugins'])) {
-            $plugins = PiwikConfig::getInstance()->Plugins['Plugins'];
+        if (isset($this->config->Plugins['Plugins'])) {
+            $plugins = $this->config->Plugins['Plugins'];
             foreach ($plugins as $pluginName) {
                 // if a plugin is listed in the config, but is not loaded, it does not exist in the folder
                 if (!self::getInstance()->isPluginLoaded($pluginName)
@@ -1039,7 +1049,7 @@ class Manager extends Singleton
         }
 
         if ($saveConfig) {
-            PiwikConfig::getInstance()->forceSave();
+            $this->config->forceSave();
         }
     }
 
@@ -1086,7 +1096,7 @@ class Manager extends Singleton
      */
     private function removePluginFromPluginsInstalledConfig($pluginName)
     {
-        $pluginsInstalled = PiwikConfig::getInstance()->PluginsInstalled['PluginsInstalled'];
+        $pluginsInstalled = $this->config->PluginsInstalled['PluginsInstalled'];
         $key = array_search($pluginName, $pluginsInstalled);
         if ($key !== false) {
             unset($pluginsInstalled[$key]);
@@ -1100,7 +1110,7 @@ class Manager extends Singleton
      */
     private function removePluginFromPluginsConfig($pluginName)
     {
-        $pluginsEnabled = PiwikConfig::getInstance()->Plugins['Plugins'];
+        $pluginsEnabled = $this->config->Plugins['Plugins'];
         $key = array_search($pluginName, $pluginsEnabled);
         if ($key !== false) {
             unset($pluginsEnabled[$key]);
@@ -1167,7 +1177,7 @@ class Manager extends Singleton
     private function removePluginFromConfig($pluginName)
     {
         $this->removePluginFromPluginsConfig($pluginName);
-        PiwikConfig::getInstance()->forceSave();
+        $this->config->forceSave();
     }
 
     /**
@@ -1247,7 +1257,7 @@ class Manager extends Singleton
      */
     protected function getPluginsFromGlobalIniConfigFile()
     {
-        $pluginsBundledWithPiwik = PiwikConfig::getInstance()->getFromGlobalConfig('Plugins');
+        $pluginsBundledWithPiwik = $this->config->getFromGlobalConfig('Plugins');
         $pluginsBundledWithPiwik = $pluginsBundledWithPiwik['Plugins'];
         return $pluginsBundledWithPiwik;
     }
@@ -1309,5 +1319,13 @@ class Manager extends Singleton
         foreach ($this->getAllPluginsNames() as $pluginName) {
             $translator->addDirectory(self::getPluginsDirectory() . $pluginName . '/lang');
         }
+    }
+
+    /**
+     * @deprecated
+     */
+    public static function getInstance()
+    {
+        return StaticContainer::get('Piwik\Plugin\Manager');
     }
 }

@@ -10,6 +10,7 @@
 namespace Piwik;
 
 use Exception;
+use Piwik\Container\StaticContainer;
 use Piwik\Ini\IniReader;
 use Piwik\Ini\IniReadingException;
 use Piwik\Ini\IniWriter;
@@ -38,10 +39,8 @@ use Piwik\Ini\IniWriter;
  *
  *     Config::getInstance()->MySection = array('myoption' => 1);
  *     Config::getInstance()->forceSave();
- *
- * @method static Config getInstance()
  */
-class Config extends Singleton
+class Config
 {
     const DEFAULT_LOCAL_CONFIG_PATH = '/config/config.ini.php';
     const DEFAULT_COMMON_CONFIG_PATH = '/config/common.config.ini.php';
@@ -430,10 +429,7 @@ class Config extends Singleton
         if (!$this->initialized) {
             $this->init();
 
-            // must be called here, not in init(), since setTestEnvironment() calls init(). (this avoids
-            // infinite recursion)
-            Piwik::postTestEvent('Config.createConfigSingleton',
-                array($this, &$this->configCache, &$this->configLocal));
+            // TODO: removed Config.createConfigSingleton event. will have to change test usage else where.
         }
 
         // check cache for merged section
@@ -726,5 +722,14 @@ class Config extends Singleton
             }
         }
         return $merged;
+    }
+
+    /**
+     * @deprecated
+     * @return Config
+     */
+    public static function getInstance()
+    {
+        return StaticContainer::get('Piwik\Config');
     }
 }

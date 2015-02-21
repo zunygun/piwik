@@ -24,6 +24,10 @@ return array(
 
     'path.cache' => DI\string('{path.tmp}/cache/tracker/'),
 
+    'Piwik\Config' => DI\object('Piwik\Config'),
+
+    'Piwik\Plugin\Manager' => DI\object('Piwik\Plugin\Manager')->constructor(DI\link('Piwik\Config')),
+
     'Piwik\Cache\Eager' => function (ContainerInterface $c) {
         $backend = $c->get('Piwik\Cache\Backend');
         $cacheId = $c->get('cache.eager.cache_id');
@@ -54,5 +58,4 @@ return array(
 
     'Piwik\Translation\Loader\LoaderInterface' => DI\object('Piwik\Translation\Loader\LoaderCache')
         ->constructor(DI\link('Piwik\Translation\Loader\JsonFileLoader')),
-
 );

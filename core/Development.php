@@ -28,10 +28,11 @@ class Development
      *
      * @return bool
      */
-    public static function isEnabled()
+    public static function isEnabled(Config $config = null)
     {
         if (is_null(self::$isEnabled)) {
-            self::$isEnabled = (bool) Config::getInstance()->Development['enabled'];
+            $config = $config ?: Config::getInstance();
+            self::$isEnabled = (bool) $config->Development['enabled'];
         }
 
         return self::$isEnabled;
