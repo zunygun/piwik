@@ -9,9 +9,11 @@
 namespace Piwik\Plugins\TestRunner\Commands;
 
 use Piwik\Config;
+use Piwik\Plugin;
 use Piwik\Plugin\ConsoleCommand;
 use Piwik\Url;
 use Piwik\Tests\Framework\Fixture;
+use ReflectionClass;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -121,7 +123,6 @@ class TestsSetupFixture extends ConsoleCommand
 
         // perform setup and/or teardown
         if ($input->getOption('teardown')) {
-            exit;
             $fixture->getTestEnvironment()->save();
             $fixture->performTearDown();
         } else {
@@ -173,7 +174,7 @@ class TestsSetupFixture extends ConsoleCommand
         $testingEnvironment = $fixture->getTestEnvironment();
 
         $optionsToOverride = array(
-            'dbname' => $fixture->getDbName(),
+            'dbname' => $fixture->dbName,
             'host' => $input->getOption('db-host'),
             'username' => $input->getOption('db-user'),
             'password' => $input->getOption('db-pass')
@@ -189,7 +190,7 @@ class TestsSetupFixture extends ConsoleCommand
         }
     }
 
-    private function createFixture(InputInterface $input, $allowSave)
+    private function createFixture(InputInterface $input)
     {
         $fixtureClass = $input->getArgument('fixture');
         if (class_exists("Piwik\\Tests\\Fixtures\\" . $fixtureClass)) {
@@ -200,6 +201,7 @@ class TestsSetupFixture extends ConsoleCommand
             throw new \Exception("Cannot find fixture class '$fixtureClass'.");
         }
 
+        /** @var Fixture $fixture */
         $fixture = new $fixtureClass();
         $fixture->printToScreen = true;
 
@@ -209,23 +211,22 @@ class TestsSetupFixture extends ConsoleCommand
         }
 
         if ($input->getOption('persist-fixture-data')) {
-            $fixture->persistFixtureData = true;
+            $fixture->dropDatabaseInSetUp = false;
+            $fixture->dropDatabaseInTearDown = false;
+            $fixture->overwriteExisting = false;
+            $fixture->removeExistingSuperUser = false;
+
+            $fixture->dbName = $this->getUniqueDbNameForFixture($fixture);
         }
 
         if ($input->getOption('drop')) {
-            $fixture->resetPersistedFixture = true;
+            $fixture->dropDatabaseInSetUp = true;
         }
 
         $extraPluginsToLoad = $input->getOption('plugins');
         if ($extraPluginsToLoad) {
             $fixture->extraPluginsToLoad = explode(',', $extraPluginsToLoad);
         }
-
-        if ($fixture->createConfig) {
-            Config::getInstance()->setTestEnvironment($pathLocal = null, $pathGlobal = null, $pathCommon = null, $allowSave);
-        }
-
-        $fixture->createConfig = false;
 
         return $fixture;
     }
@@ -270,5 +271,12 @@ class TestsSetupFixture extends ConsoleCommand
         }
         @ini_set('include_path', PIWIK_INCLUDE_SEARCH_PATH);
         @set_include_path(PIWIK_INCLUDE_SEARCH_PATH);
+    }
+
+    private function getUniqueDbNameForFixture($fixture)
+    {
+        $klass = new ReflectionClass($fixture);
+        $targetDbName = Plugin::getPluginNameFromNamespace($klass->getNamespaceName()) . "_" . $klass->getShortName();
+        return $targetDbName;
     }
 }

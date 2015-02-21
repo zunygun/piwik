@@ -155,7 +155,7 @@ class Collection
             $requestUrls = array_map(function ($params) {
                 return is_string($params) ? $params : Url::getQueryStringFromParameters($params);
             }, $requestUrls);
-            throw new Exception("Only generated $countUrls API calls to test but was expecting more for this test.\n" .
+            throw new Exception("Only generated $countUrls API calls to test but was expecting at least $approximateCountApiToCall for this test.\n" .
                     "Want to test APIs: " . implode(", ", $this->apiToCall) . ")\n" .
                     "But only generated these URLs: \n" . implode("\n", $requestUrls) . ")\n"
             );

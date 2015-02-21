@@ -85,7 +85,6 @@ class BlobReportLimitingTest extends SystemTestCase
      */
     public function testApi($api, $params)
     {
-        echo Config::getInstance()->General['datatable_archiving_maximum_rows_referers']."\n\n";
         $this->runApiTests($api, $params);
     }
 
