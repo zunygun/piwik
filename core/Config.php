@@ -153,6 +153,7 @@ class Config extends Singleton
             $this->configCache['Deletelogs'] = $this->configGlobal['Deletelogs'];
             $this->configCache['Deletereports'] = $this->configGlobal['Deletereports'];
             $this->configCache['Development'] = $this->configGlobal['Development'];
+            $this->configCache['Plugins'] = $this->configGlobal['Plugins'];
         }
 
         // for unit tests, we set that no plugin is installed. This will force
