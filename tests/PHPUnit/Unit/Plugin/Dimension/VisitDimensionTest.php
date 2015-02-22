@@ -9,6 +9,7 @@
 namespace Piwik\Plugins\Test;
 // there is a test that requires the class to be defined in a plugin
 
+use Piwik\Container\StaticContainer;
 use Piwik\Plugin\Dimension\VisitDimension;
 use Piwik\Plugin\Segment;
 use Piwik\Plugin\Manager;
@@ -84,7 +85,7 @@ class Plugin_VisitDimensionTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        Manager::unsetInstance();
+        StaticContainer::clearContainer();
         parent::tearDown();
     }
 

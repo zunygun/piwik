@@ -8,6 +8,7 @@
 
 namespace Piwik\Tests\Unit\AssetManager;
 
+use Piwik\Config;
 use Piwik\Plugin\Manager;
 use Piwik\Plugin;
 use Piwik\Theme;
@@ -24,6 +25,11 @@ class PluginManagerMock extends Manager
      * @var Theme
      */
     private $loadedTheme;
+
+    public function __construct(Config $config)
+    {
+        parent::__construct($config);
+    }
 
     /**
      * @param Plugin[] $plugins

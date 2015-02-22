@@ -21,9 +21,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $userFile = PIWIK_INCLUDE_PATH . '/tests/resources/Config/config.ini.php';
         $globalFile = PIWIK_INCLUDE_PATH . '/tests/resources/Config/global.ini.php';
         $commonFile = PIWIK_INCLUDE_PATH . '/tests/resources/Config/common.ini.php';
-        $config = Config::getInstance();
-        $config->setTestEnvironment($userFile, $globalFile, $commonFile);
-        $config->init();
+        $config = new Config($globalFile, $userFile, $commonFile);
 
         $this->assertEquals("value_overwritten", $config->Category['key1']);
         $this->assertEquals("value2", $config->Category['key2']);
@@ -51,9 +49,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $globalFile = PIWIK_INCLUDE_PATH . '/tests/resources/Config/global.ini.php';
         $commonFile = PIWIK_INCLUDE_PATH . '/tests/resources/Config/common.config.ini.php';
 
-        $config = Config::getInstance();
-        $config->setTestEnvironment($userFile, $globalFile, $commonFile);
-        $config->init();
+        $config = new Config($globalFile, $userFile, $commonFile);
 
         $this->assertEquals("valueCommon", $config->Category['key2'], var_export($config->Category['key2'], true));
         $this->assertEquals("test", $config->GeneralSection['password']);
@@ -66,9 +62,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $userFile = PIWIK_INCLUDE_PATH . '/tests/resources/Config/config.written.ini.php';
         $globalFile = PIWIK_INCLUDE_PATH . '/tests/resources/Config/global.ini.php';
 
-        $config = Config::getInstance();
-        $config->setTestEnvironment($userFile, $globalFile);
-        $config->init();
+        $config = new Config($globalFile, $userFile);
 
         $stringWritten = '&6^ geagea\'\'\'";;&';
         $config->Category = array('test' => $stringWritten);
@@ -77,9 +71,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         // This will write the file
         $config->forceSave();
 
-        $config = Config::getInstance();
-        $config->setTestEnvironment($userFile, $globalFile);
-        $config->init();
+        $config = new Config($globalFile, $userFile);
 
         $this->assertEquals($stringWritten, $config->Category['test']);
         $config->Category = array(
@@ -95,8 +87,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $userFile = PIWIK_PATH_TEST_TO_ROOT . '/tests/resources/Config/config.ini.php';
         $globalFile = PIWIK_PATH_TEST_TO_ROOT . '/tests/resources/Config/global.ini.php';
 
-        $config = Config::getInstance();
-        $config->setTestEnvironment($userFile, $globalFile);
+        $config = new Config($globalFile, $userFile);
 
         $this->assertEquals("value_overwritten", $config->Category['key1']);
         $this->assertEquals("value2", $config->Category['key2']);
@@ -111,8 +102,6 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $expectedArray = array('value1', 'value2');
         $array = $config->TestArrayOnlyInGlobalFile;
         $this->assertEquals($expectedArray, $array['my_array']);
-
-        Config::getInstance()->clear();
     }
 
     /**
@@ -210,7 +199,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testArrayUnmerge($description, $test)
     {
-        $configWriter = Config::getInstance();
+        $configWriter = new Config();
 
         list($a, $b) = $test;
 
@@ -429,7 +418,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testDumpConfig($description, $test)
     {
-        $config = Config::getInstance();
+        $config = new Config();
 
         list($configLocal, $configGlobal, $configCommon, $configCache, $expected) = $test;
 
@@ -443,9 +432,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $globalFile = PIWIK_INCLUDE_PATH . '/tests/resources/Config/global.ini.php';
         $commonFile = PIWIK_INCLUDE_PATH . '/tests/resources/Config/common.config.ini.php';
 
-        $config = Config::getInstance();
-        $config->setTestEnvironment($userFile, $globalFile, $commonFile);
-        $config->init();
+        $config = new Config($globalFile, $userFile, $commonFile);
 
         $this->assertEquals('${@piwik(crash))}', $config->Category['key3']);
     }

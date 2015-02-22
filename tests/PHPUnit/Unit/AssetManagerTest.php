@@ -14,6 +14,7 @@ use Piwik\AssetManager\UIAsset;
 use Piwik\AssetManager;
 use Piwik\AssetManager\UIAssetFetcher\StaticUIAssetFetcher;
 use Piwik\Config;
+use Piwik\Container\StaticContainer;
 use Piwik\Plugin;
 use Piwik\Plugin\Manager;
 use Piwik\EventDispatcher;
@@ -80,7 +81,8 @@ class AssetManagerTest extends PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $this->assetManager->removeMergedAssets();
-        Manager::unsetInstance();
+
+        StaticContainer::clearContainer();
     }
 
     private function activateMergedAssets()
@@ -101,9 +103,7 @@ class AssetManagerTest extends PHPUnit_Framework_TestCase
         $userFile = PIWIK_INCLUDE_PATH . '/' . self::ASSET_MANAGER_TEST_DIR . 'configs/' . $filename;
         $globalFile = PIWIK_INCLUDE_PATH . '/' . self::ASSET_MANAGER_TEST_DIR . 'configs/plugins.ini.php';
 
-        $config = Config::getInstance();
-        $config->setTestEnvironment($userFile, $globalFile);
-        $config->init();
+        StaticContainer::getContainer()->set('Piwik\Config', new Config($globalFile, $userFile));
     }
 
     private function setUpCacheBuster()
@@ -122,8 +122,8 @@ class AssetManagerTest extends PHPUnit_Framework_TestCase
 
     private function setUpPluginManager()
     {
-        $this->pluginManager = PluginManagerMock::getInstance();
-        Manager::setSingletonInstance($this->pluginManager);
+        $this->pluginManager = new PluginManagerMock(Config::getInstance());
+        StaticContainer::getContainer()->set('Piwik\Plugin\Manager', $this->pluginManager);
 
         EventDispatcher::unsetInstance(); // EventDispatcher stores a reference to Plugin Manager
     }
@@ -433,7 +433,7 @@ class AssetManagerTest extends PHPUnit_Framework_TestCase
     /**
      * @group Core
      */
-    public function test_getMergedCoreJavaScript_NotGenerated()
+    public function test_getMergedCoreJavaScript_IfMergedAssetsWasNotGeneratedYet()
     {
         $this->setJSCacheBuster(self::FIRST_CACHE_BUSTER_JS);
 
@@ -445,7 +445,7 @@ class AssetManagerTest extends PHPUnit_Framework_TestCase
     /**
      * @group Core
      */
-    public function test_getMergedNonCoreJavaScript_NotGenerated()
+    public function test_getMergedNonCoreJavaScript_IfMergedAssetsWasNotGeneratedYet()
     {
         $this->setJSCacheBuster(self::FIRST_CACHE_BUSTER_JS);
 
@@ -457,7 +457,7 @@ class AssetManagerTest extends PHPUnit_Framework_TestCase
     /**
      * @group Core
      */
-    public function test_getMergedNonCoreJavaScript_NotGenerated_NoNonCorePlugin()
+    public function test_getMergedNonCoreJavaScript_IfMergedAssetsWasNotGeneratedYet_WithNoNonCorePlugin()
     {
         $this->setUpCorePluginOnly();
 

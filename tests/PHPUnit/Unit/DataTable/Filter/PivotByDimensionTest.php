@@ -9,6 +9,7 @@ namespace Piwik\Tests\Core\DataTable\Filter;
 
 use Piwik\API\Proxy;
 use Piwik\Config;
+use Piwik\Container\StaticContainer;
 use Piwik\DataTable;
 use Piwik\DataTable\Filter\PivotByDimension;
 use Piwik\DataTable\Row;
@@ -56,13 +57,11 @@ class PivotByDimensionTest extends PHPUnit_Framework_TestCase
         Proxy::setSingletonInstance($proxyMock);
 
         $this->segmentTableCount = 0;
-
-        Config::getInstance()->setTestEnvironment();
     }
 
     public function tearDown()
     {
-        PluginManager::unsetInstance();
+        StaticContainer::clearContainer();
         Proxy::unsetInstance();
     }
 
