@@ -789,8 +789,7 @@ class Manager
 
     public function getActivatedPluginsFromConfig()
     {
-        $plugins = $this->config->Plugins['Plugins'];
-
+        $plugins = @$this->config->Plugins['Plugins'];
         return $this->makePluginsToLoad($plugins);
     }
 

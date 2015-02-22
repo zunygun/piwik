@@ -61,7 +61,7 @@ class Config
     /**
      * @var boolean
      */
-    protected $isTest = false;
+    protected $doNotWriteConfigInTests = false;
 
     /**
      * @var IniReader
@@ -122,10 +122,8 @@ class Config
     public function setTestEnvironment($pathLocal = null, $pathGlobal = null, $pathCommon = null, $allowSaving = false)
     {
         if (!$allowSaving) {
-            $this->isTest = true;
+            $this->doNotWriteConfigInTests = true;
         }
-
-        $this->clear();
 
         $this->pathLocal = $pathLocal ?: Config::getLocalConfigPath();
         $this->pathGlobal = $pathGlobal ?: Config::getGlobalConfigPath();
@@ -133,8 +131,6 @@ class Config
 
         $this->init();
 
-        // this proxy will not record any data in the production database.
-        // this provides security for Piwik installs and tests were setup.
         if (isset($this->configGlobal['database_tests'])
             || isset($this->configLocal['database_tests'])
         ) {
@@ -281,8 +277,9 @@ class Config
     {
         $hostConfig = self::getLocalConfigInfoForHostname($hostname);
 
-        if (!Filesystem::isValidFilename($hostConfig['file'])) {
-            throw new Exception('Hostname is not valid');
+        $filename = $hostConfig['file'];
+        if (!Filesystem::isValidFilename($filename)) {
+            throw new Exception('Piwik domain is not a valid looking hostname (' . $filename . ').');
         }
 
         $this->pathLocal   = $hostConfig['path'];
@@ -308,6 +305,7 @@ class Config
     {
         $this->configGlobal = array();
         $this->configLocal = array();
+        $this->configCommon = array();
         $this->configCache = array();
         $this->initialized = false;
     }
@@ -319,6 +317,7 @@ class Config
      */
     public function init()
     {
+        $this->clear();
         $this->initialized = true;
         $reportError = SettingsServer::isTrackerApiRequest();
 
@@ -649,7 +648,7 @@ class Config
      */
     protected function writeConfig($configLocal, $configGlobal, $configCommon, $configCache, $pathLocal, $clear = true)
     {
-        if ($this->isTest) {
+        if ($this->doNotWriteConfigInTests) {
             return;
         }
 
