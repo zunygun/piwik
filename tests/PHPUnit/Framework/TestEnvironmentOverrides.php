@@ -241,7 +241,9 @@ class TestEnvironmentOverrides
 
     private function handleUseXhprof()
     {
-        \Piwik\Profiler::setupProfilerXHProf($mainRun = false, $setupDuringTracking = true);
+        if ($this->useXhprof) {
+            \Piwik\Profiler::setupProfilerXHProf($mainRun = false, $setupDuringTracking = true);
+        }
     }
 
     private function setUpPiwikEnvironmentForTests()
