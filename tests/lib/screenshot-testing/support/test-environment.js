@@ -8,7 +8,7 @@
  */
 
 var fs = require('fs'),
-    testingEnvironmentOverridePath = path.join(PIWIK_INCLUDE_PATH, '/tmp/testingPathOverride.json');
+    testingEnvironmentOverridePath = path.join(PIWIK_INCLUDE_PATH, '/tmp/testEnvironmentOverrides.json');
 
 var TestingEnvironment = function () {
     this.reload();

@@ -20,8 +20,8 @@ describe("UIIntegrationTest", function () { // TODO: Rename to Piwik?
 
     before(function (done) {
         testEnvironment.queryParamOverride = {
-            forceNowValue: testEnvironment.forcedNowTimestamp,
-            visitorId: testEnvironment.forcedIdVisitor,
+            forceNowValue: testEnvironment.otherProperties.forcedNowTimestamp,
+            visitorId: testEnvironment.otherProperties.forcedIdVisitor,
             realtimeWindow: 'false'
         };
         testEnvironment.save();

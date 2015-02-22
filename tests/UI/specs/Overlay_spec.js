@@ -14,7 +14,7 @@ describe("Overlay", function () {
     var url = null;
 
     before(function (done) {
-        url = "?module=Overlay&period=year&date=today&idSite=3#l=" + encodeURIComponent(testEnvironment.overlayUrl).replace(/[%]/g, "$");
+        url = "?module=Overlay&period=year&date=today&idSite=3#l=" + encodeURIComponent(testEnvironment.otherProperties.overlayUrl).replace(/[%]/g, "$");
         
         testEnvironment.callApi("SitesManager.addSiteAliasUrls", {idSite: 3, urls: [config.piwikUrl]}, done);
     });

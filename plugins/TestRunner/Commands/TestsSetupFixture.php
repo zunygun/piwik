@@ -9,6 +9,7 @@
 namespace Piwik\Plugins\TestRunner\Commands;
 
 use Piwik\Config;
+use Piwik\Container\StaticContainer;
 use Piwik\Plugin;
 use Piwik\Plugin\ConsoleCommand;
 use Piwik\Url;
@@ -103,6 +104,9 @@ class TestsSetupFixture extends ConsoleCommand
         if ($input->getOption('set-phantomjs-symlinks')) {
             $this->createSymbolicLinksForUITests();
         }
+
+        StaticContainer::clearContainer();
+        StaticContainer::setEnvironment('test');
 
         $fixture = $this->createFixture($input);
 
@@ -217,7 +221,6 @@ class TestsSetupFixture extends ConsoleCommand
     private function requireFixtureFiles(InputInterface $input)
     {
         require_once PIWIK_INCLUDE_PATH . '/libs/PiwikTracker/PiwikTracker.php';
-        require_once PIWIK_INCLUDE_PATH . '/tests/PHPUnit/TestingEnvironment.php';
 
         $fixturesToLoad = array(
             '/tests/PHPUnit/Fixtures/*.php',

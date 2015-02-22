@@ -80,6 +80,8 @@ class Config
         $this->pathLocal = $pathLocal ?: self::getLocalConfigPath();
         $this->iniReader = new IniReader();
         $this->iniWriter = new IniWriter();
+
+        $this->init();
     }
 
     /**
@@ -118,42 +120,15 @@ class Config
      * @param string $pathLocal
      * @param string $pathGlobal
      * @param string $pathCommon
+     * @deprecated
      */
     public function setTestEnvironment($pathLocal = null, $pathGlobal = null, $pathCommon = null, $allowSaving = false)
     {
-        if (!$allowSaving) {
-            $this->doNotWriteConfigInTests = true;
-        }
+        $this->pathGlobal = $pathGlobal ?: self::getGlobalConfigPath();
+        $this->pathCommon = $pathCommon ?: self::getCommonConfigPath();
+        $this->pathLocal = $pathLocal ?: self::getLocalConfigPath();
 
-        $this->pathLocal = $pathLocal ?: Config::getLocalConfigPath();
-        $this->pathGlobal = $pathGlobal ?: Config::getGlobalConfigPath();
-        $this->pathCommon = $pathCommon ?: Config::getCommonConfigPath();
-
-        $this->init();
-
-        if (isset($this->configGlobal['database_tests'])
-            || isset($this->configLocal['database_tests'])
-        ) {
-            $this->__get('database_tests');
-            $this->configCache['database'] = $this->configCache['database_tests'];
-        }
-
-        // Ensure local mods do not affect tests
-        if (empty($pathGlobal)) {
-            $this->configCache['Debug'] = $this->configGlobal['Debug'];
-            $this->configCache['mail'] = $this->configGlobal['mail'];
-            $this->configCache['General'] = $this->configGlobal['General'];
-            $this->configCache['Segments'] = $this->configGlobal['Segments'];
-            $this->configCache['Tracker'] = $this->configGlobal['Tracker'];
-            $this->configCache['Deletelogs'] = $this->configGlobal['Deletelogs'];
-            $this->configCache['Deletereports'] = $this->configGlobal['Deletereports'];
-            $this->configCache['Development'] = $this->configGlobal['Development'];
-            $this->configCache['Plugins'] = $this->configGlobal['Plugins'];
-        }
-
-        // for unit tests, we set that no plugin is installed. This will force
-        // the test initialization to create the plugins tables, execute ALTER queries, etc.
-        $this->configCache['PluginsInstalled'] = array('PluginsInstalled' => array());
+        Tests\Framework\Mock\Config::doSetTestEnvironment($this, $allowSaving);
     }
 
     /**
@@ -315,7 +290,7 @@ class Config
      *
      * @throws Exception if local config file is not readable; exits for other errors
      */
-    public function init()
+    private function init()
     {
         $this->clear();
         $this->initialized = true;
@@ -425,11 +400,7 @@ class Config
      */
     public function &__get($name)
     {
-        if (!$this->initialized) {
-            $this->init();
-
-            // TODO: removed Config.createConfigSingleton event. will have to change test usage else where.
-        }
+        // TODO: removed Config.createConfigSingleton event. will have to change test usage else where.
 
         // check cache for merged section
         if (isset($this->configCache[$name])) {

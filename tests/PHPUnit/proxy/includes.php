@@ -9,6 +9,5 @@ if (!defined('PIWIK_USER_PATH')) {
 
 require_once PIWIK_INCLUDE_PATH . '/core/bootstrap.php';
 
-require_once PIWIK_INCLUDE_PATH . '/tests/PHPUnit/TestingEnvironment.php';
-
 Piwik\SettingsServer::setMaxExecutionTime(0);
+Piwik\Container\StaticContainer::setEnvironment('test');

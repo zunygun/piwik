@@ -237,7 +237,6 @@ class Manager
     {
         $this->updatePluginsInstalledConfig( array() );
         $this->config->forceSave();
-        $this->config->init();
     }
 
     /**

@@ -35,7 +35,6 @@ if (!defined('PIWIK_INCLUDE_SEARCH_PATH')) {
 require_once PIWIK_INCLUDE_PATH . '/core/bootstrap.php';
 
 require_once PIWIK_INCLUDE_PATH . '/libs/PiwikTracker/PiwikTracker.php';
-require_once PIWIK_INCLUDE_PATH . '/tests/PHPUnit/TestingEnvironment.php';
 
 if (getenv('PIWIK_USE_XHPROF') == 1) {
     \Piwik\Profiler::setupProfilerXHProf();
@@ -43,8 +42,6 @@ if (getenv('PIWIK_USE_XHPROF') == 1) {
 
 // setup container for tests
 StaticContainer::setEnvironment('test');
-
-\Piwik\Config::getInstance()->setTestEnvironment();
 
 // require test fixtures
 $fixturesToLoad = array(

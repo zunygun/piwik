@@ -44,12 +44,12 @@ use Piwik\Tracker\Cache;
 use Piwik\Translate;
 use Piwik\Url;
 use PHPUnit_Framework_Assert;
-use Piwik_TestingEnvironment;
 use PiwikTracker;
 use Piwik_LocalTracker;
 use Piwik\Updater;
 use Piwik\Plugins\CoreUpdater\CoreUpdater;
 use Exception;
+use Piwik\Tests\Framework\TestEnvironmentOverrides;
 
 /**
  * Base type for all system test fixtures. System test fixtures
@@ -89,6 +89,9 @@ class Fixture extends \PHPUnit_Framework_Assert
     public $testCaseClass = false;
     public $extraPluginsToLoad = array();
 
+    /**
+     * @var TestEnvironmentOverrides
+     */
     public $testEnvironment = null;
 
     /**
@@ -145,8 +148,6 @@ class Fixture extends \PHPUnit_Framework_Assert
 
     public function setupEnvironment()
     {
-        Config::getInstance()->setTestEnvironment();
-
         if (empty($this->dbName)) {
             $this->dbName = Config::getInstance()->database_tests['dbname'];
         } else {
@@ -196,7 +197,6 @@ class Fixture extends \PHPUnit_Framework_Assert
 
         $this->getTestEnvironment()->save();
         $this->getTestEnvironment()->executeSetupTestEnvHook();
-        Piwik_TestingEnvironment::addSendMailHook();
 
         PiwikCache::getTransientCache()->flushAll();
     }
@@ -232,7 +232,7 @@ class Fixture extends \PHPUnit_Framework_Assert
     public function getTestEnvironment()
     {
         if ($this->testEnvironment === null) {
-            $this->testEnvironment = new Piwik_TestingEnvironment();
+            $this->testEnvironment = StaticContainer::get('Piwik\Tests\Framework\TestEnvironmentOverrides');
             $this->testEnvironment->delete();
 
             if (getenv('PIWIK_USE_XHPROF') == 1) {
@@ -279,25 +279,26 @@ class Fixture extends \PHPUnit_Framework_Assert
         Cache::deleteTrackerCache();
         PiwikCache::getTransientCache()->flushAll();
         PiwikCache::getEagerCache()->flushAll();
-        Config::getInstance()->clear();
         ArchiveTableCreator::clear();
         \Piwik\Plugins\ScheduledReports\API::$cache = array();
         EventDispatcher::getInstance()->clearAllObservers();
 
         $_GET = $_REQUEST = array();
         Translate::reset();
+
+        StaticContainer::clearContainer();
     }
 
     public static function loadAllPlugins($testEnvironment = null, $testCaseClass = false, $extraPluginsToLoad = array())
     {
         if (empty($testEnvironment)) {
-            $testEnvironment = new Piwik_TestingEnvironment();
+            $testEnvironment = StaticContainer::get('Piwik\Tests\Framework\TestEnvironmentOverrides');
         }
 
         DbHelper::createTables();
         $pluginsManager = Manager::getInstance();
 
-        $plugins = $testEnvironment->getCoreAndSupportedPlugins();
+        $plugins = $pluginsManager->getCoreAndSupportedPluginsToLoadDuringTests();
 
         // make sure the plugin that executed this method is included in the plugins to load
         $extraPlugins = array_merge($extraPluginsToLoad, array(

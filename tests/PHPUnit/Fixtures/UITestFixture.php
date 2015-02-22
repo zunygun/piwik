@@ -70,9 +70,9 @@ class UITestFixture extends SqlDump
         $visitorIdDeterministic = bin2hex(Db::fetchOne(
             "SELECT idvisitor FROM " . Common::prefixTable('log_visit')
             . " WHERE idsite = 2 AND location_latitude IS NOT NULL LIMIT 1"));
-        $this->testEnvironment->forcedIdVisitor = $visitorIdDeterministic;
+        $this->testEnvironment->otherProperties['forcedIdVisitor'] = $visitorIdDeterministic;
 
-        $this->testEnvironment->overlayUrl = $this->getLocalTestSiteUrl();
+        $this->testEnvironment->otherProperties['overlayUrl'] = $this->getLocalTestSiteUrl();
         $this->createOverlayTestSite();
 
         $forcedNowTimestamp = Option::get("Tests.forcedNowTimestamp");
@@ -80,7 +80,7 @@ class UITestFixture extends SqlDump
             throw new Exception("Incorrect fixture setup, Tests.forcedNowTimestamp option does not exist! Run the setup again.");
         }
 
-        $this->testEnvironment->forcedNowTimestamp = $forcedNowTimestamp;
+        $this->testEnvironment->otherProperties['forcedNowTimestamp'] = $forcedNowTimestamp;
         $this->testEnvironment->save();
     }
 
