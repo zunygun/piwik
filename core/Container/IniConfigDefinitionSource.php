@@ -32,7 +32,7 @@ class IniConfigDefinitionSource extends ChainableDefinitionSource
      * @param Config $config
      * @param string $prefix Prefix for the container entries.
      */
-    public function __construct(Config $config = null, $prefix = 'ini.')
+    public function __construct(Config $config, $prefix = 'ini.')
     {
         $this->config = $config;
         $this->prefix = $prefix;

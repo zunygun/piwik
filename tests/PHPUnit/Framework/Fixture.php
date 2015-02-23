@@ -796,7 +796,7 @@ class Fixture extends \PHPUnit_Framework_Assert
 
         $iniReader = new IniReader();
         $config = $iniReader->readFile(PIWIK_INCLUDE_PATH . '/config/config.ini.php');
-        $originalDbName = $config['database']['dbname'];
+        $originalDbName = @$config['database']['dbname'];
         if ($dbName == $originalDbName
             && $dbName != 'piwik_tests'
         ) { // santity check
