@@ -345,6 +345,7 @@ class Config
     public function checkLocalConfigFound()
     {
         if (!$this->existsLocalConfig()) {
+            // TODO: when local config is not found, infinite recursion occurs since Piwik::translate requires config var. not sure how to fix.
             throw new Exception(Piwik::translate('General_ExceptionConfigurationFileNotFound', array($this->pathLocal)));
         }
     }

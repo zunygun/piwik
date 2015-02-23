@@ -8,6 +8,7 @@
 
 namespace Piwik\Tests\Integration\Plugin;
 
+use Piwik\Config;
 use Piwik\Db;
 use Piwik\Plugin;
 use Piwik\Settings\Storage;
@@ -58,10 +59,13 @@ class ManagerTest extends IntegrationTestCase
         $pluginsToLoad = array('CoreHome', 'UserLanguage', 'Login', 'CoreAdminHome');
         $this->getCacheForTrackerPlugins()->save($this->trackerCacheId, $pluginsToLoad);
 
-        $pluginsToLoad = $this->manager->loadTrackerPlugins();
+        $loadTrackerPluginsResult = $this->manager->loadTrackerPlugins();
+        $this->assertEquals($pluginsToLoad, $loadTrackerPluginsResult);
 
         $this->assertCount(4, $this->manager->getLoadedPlugins());
-        $this->assertEquals($pluginsToLoad, array_keys($this->manager->getLoadedPlugins()));
+
+        $expectedLoadedPluginsInOrder = array('CoreAdminHome', 'CoreHome', 'UserLanguage', 'Login');
+        $this->assertEquals($expectedLoadedPluginsInOrder, array_keys($this->manager->getLoadedPlugins()));
     }
 
     public function test_loadTrackerPlugins_shouldUnloadAllPlugins_IfThereAreNoneToLoad()

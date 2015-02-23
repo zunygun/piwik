@@ -114,7 +114,7 @@ class Translator
      */
     public function getDefaultLanguage()
     {
-        return Config::getInstance()->General['default_language'];
+        return @Config::getInstance()->General['default_language'] ?: 'en';
     }
 
     /**
