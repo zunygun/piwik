@@ -1321,6 +1321,7 @@ class Manager
 
     /**
      * @deprecated
+     * @return Manager
      */
     public static function getInstance()
     {

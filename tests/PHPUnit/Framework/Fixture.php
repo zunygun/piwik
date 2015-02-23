@@ -148,6 +148,8 @@ class Fixture extends \PHPUnit_Framework_Assert
 
     public function setupEnvironment()
     {
+        StaticContainer::clearContainer();
+
         if (empty($this->dbName)) {
             $this->dbName = Config::getInstance()->database_tests['dbname'];
         } else {
@@ -295,7 +297,6 @@ class Fixture extends \PHPUnit_Framework_Assert
             $testEnvironment = StaticContainer::get('Piwik\Tests\Framework\TestEnvironmentOverrides');
         }
 
-        DbHelper::createTables();
         $pluginsManager = Manager::getInstance();
 
         $plugins = $pluginsManager->getCoreAndSupportedPluginsToLoadDuringTests();

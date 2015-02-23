@@ -42,6 +42,9 @@ class Piwik_MockAccess // TODO: move this or remove it?
 
 /**
  * TODO
+ *
+ * TODO: instead of making mock classes (ie, Config, plugin Manager) use TestEnvironmentOverrides,
+ *       this class should non-intrusively modify the mock classes
  */
 class TestEnvironmentOverrides
 {

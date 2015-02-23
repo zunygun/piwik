@@ -73,14 +73,14 @@ abstract class IntegrationTestCase extends SystemTestCase
     {
         parent::setUp();
 
-        Config::getInstance()->setTestEnvironment();
+        static::$fixture->clearInMemoryCaches();
 
         if (!empty(self::$tableData)) {
             self::restoreDbTables(self::$tableData);
         }
 
-        PiwikCache::getEagerCache()->flushAll();
-        PiwikCache::getTransientCache()->flushAll();
+        // TODO: ideally shouldn't have to add this. maybe test plugin manager should do this itself on construction?
+        Fixture::loadAllPlugins($testEnv = null, $testCaseClass = get_class($this));
     }
 
     /**

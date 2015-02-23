@@ -28,9 +28,6 @@ class ActionTest extends IntegrationTestCase
     public function setUp()
     {
         parent::setUp();
-        $config = Config::getInstance();
-        $config->clear();
-        $config->setTestEnvironment();
         $section = Config::getInstance()->Tracker;
         $section['default_action_url'] = '/';
         $section['campaign_var_name']  = 'campaign_param_name,piwik_campaign,utm_campaign,test_campaign_name';

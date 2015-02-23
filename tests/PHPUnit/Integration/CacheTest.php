@@ -12,21 +12,12 @@ use Piwik\Cache;
 use Piwik\Container\StaticContainer;
 use Piwik\Piwik;
 use Piwik\Tests\Framework\TestCase\IntegrationTestCase;
-use Piwik\Translate;
 
 /**
  * @group Cache
  */
 class CacheTest extends IntegrationTestCase
 {
-    public function setUp()
-    {
-    }
-
-    public function tearDown()
-    {
-    }
-
     public function test_getLazyCache_shouldCreateAnInstanceOfLazy()
     {
         $cache = Cache::getLazyCache();
