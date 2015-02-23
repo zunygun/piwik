@@ -194,21 +194,19 @@ class TestEnvironmentOverrides
         }
 
         $data = json_decode(file_get_contents($this->pathToProperties), true);
-        foreach ($data as $key => $value) {
-            if (!property_exists($this, $key)) {
-                throw new \RuntimeException("Invalid property '$key' found in test environment overrides property file.");
-            }
-
-            $this->$key = $value;
-        }
+        $this->loadFromArray($data);
     }
 
     public function save($data = null)
     {
         @mkdir(PIWIK_INCLUDE_PATH . '/tmp');
 
-        $properties = $data ?: get_object_vars($this);
+        $properties = is_array($data) ? $data : get_object_vars($this);
         file_put_contents($this->pathToProperties, json_encode($properties));
+
+        if ($data != null) {
+            $this->loadFromArray($data);
+        }
     }
 
     public function delete()
@@ -339,5 +337,16 @@ class TestEnvironmentOverrides
 
             file_put_contents($outputFile, json_encode($outputContents));
         });
+    }
+
+    private function loadFromArray($data)
+    {
+        foreach ($data as $key => $value) {
+            if (!property_exists($this, $key)) {
+                throw new \RuntimeException("Invalid property '$key' found in test environment overrides property file.");
+            }
+
+            $this->$key = $value;
+        }
     }
 }
