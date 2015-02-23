@@ -131,6 +131,9 @@ TestingEnvironment.prototype.setupFixture = function (fixtureClass, done) {
 
     this.deleteAndSave();
 
+    this.testUseRegularAuth = 0;
+    this.save();
+
     var args = [fixtureClass || "UITestFixture", '--set-phantomjs-symlinks', '--server-global=' + JSON.stringify(config.phpServer)];
 
     if (options['persist-fixture-data']) {

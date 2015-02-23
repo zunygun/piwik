@@ -88,7 +88,7 @@ class TestEnvironmentOverrides
      *
      * @var bool
      */
-    public $testUseRegularAuth = false;
+    public $testUseRegularAuth = true;
 
     /**
      * TODO

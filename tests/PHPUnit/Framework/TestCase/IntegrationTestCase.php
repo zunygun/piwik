@@ -9,6 +9,7 @@
 namespace Piwik\Tests\Framework\TestCase;
 
 use Piwik\Config;
+use Piwik\Container\StaticContainer;
 use Piwik\Db;
 use Piwik\Tests\Framework\Fixture;
 use Piwik\Cache as PiwikCache;
@@ -74,6 +75,8 @@ abstract class IntegrationTestCase extends SystemTestCase
         parent::setUp();
 
         static::$fixture->clearInMemoryCaches();
+
+        StaticContainer::getContainer()->get('Piwik\Tests\Framework\TestEnvironmentOverrides')->delete(); // TODO: shouldn't need this code
 
         if (!empty(self::$tableData)) {
             self::restoreDbTables(self::$tableData);
