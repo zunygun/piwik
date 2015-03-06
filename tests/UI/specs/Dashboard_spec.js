@@ -113,7 +113,8 @@ describe("Dashboard", function () {
         }, done);
     });
 
-    it("should add a widget when a widget is selected in the dashboard manager", function (done) {
+    // ("3" means we retry up to 3 times as this test randomly fails)
+    it(3, "should add a widget when a widget is selected in the dashboard manager", function (done) {
         expect.screenshot("widget_add_widget").to.be.capture(function (page) {
             page.click('.dashboard-manager');
 

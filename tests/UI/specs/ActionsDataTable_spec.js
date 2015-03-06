@@ -18,7 +18,8 @@ describe("ActionsDataTable", function () {
         }, done);
     });
 
-    it("should sort column correctly when column header clicked", function (done) {
+    // ("3" means we retry up to 3 times as this test randomly fails)
+    it(3, "should sort column correctly when column header clicked", function (done) {
         expect.screenshot('column_sorted').to.be.capture(function (page) {
             page.click('th#avg_time_on_page');
         }, done);
@@ -46,7 +47,8 @@ describe("ActionsDataTable", function () {
         }, done);
     });
 
-    it("should load normal view when switch to view hierarchical view link is clicked", function (done) {
+    // ("3" means we retry up to 3 times as this test randomly fails)
+    it(3, "should load normal view when switch to view hierarchical view link is clicked", function (done) {
         expect.screenshot('unflattened').to.be.capture(function (page) {
             // exclude low population (copied from exclude_low_population test above as it was 'skipped')
             page.mouseMove('.tableConfiguration');

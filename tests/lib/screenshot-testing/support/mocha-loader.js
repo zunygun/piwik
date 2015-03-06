@@ -71,7 +71,7 @@ mocha.constructor.process.stdout = {
 };
 
 mocha.setup({
-    ui: 'bdd',
+    ui: 'mocha-retry', // 'bdd' was the default
     reporter: config.reporter,
     bail: false
 });
