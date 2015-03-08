@@ -14,7 +14,7 @@ Piwik aims to be a Free software alternative to Google Analytics, and is already
 
 > « To create, as a community, the leading international Free/Libre web analytics platform, providing access to all functionality through open components and open APIs. »
 
-Or in short:
+Or in short: 
 > « Liberate Web Analytics »
 
 ## License
