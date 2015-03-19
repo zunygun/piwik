@@ -7,6 +7,7 @@
  *
  */
 
+use Piwik\Container\StaticContainer;
 use Piwik\DataTable\Manager;
 use Piwik\Option;
 use Piwik\Plugins\UserCountry\LocationProvider\GeoIp;
@@ -20,6 +21,8 @@ require realpath(dirname(__FILE__)) . "/includes.php";
 ob_start();
 
 try {
+    StaticContainer::setEnvironment('tracker');
+
     Piwik_TestingEnvironment::addHooks();
 
     GeoIp::$geoIPDatabaseDir = 'tests/lib/geoip-files';

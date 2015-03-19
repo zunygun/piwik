@@ -11,6 +11,7 @@
 use Piwik\Tracker\RequestSet;
 use Piwik\Tracker;
 use Piwik\Tracker\Handler;
+use Piwik\Container\StaticContainer;
 
 // Note: if you wish to debug the Tracking API please see this documentation:
 // http://developer.piwik.org/api-reference/tracking-api#debugging-the-tracker
@@ -26,6 +27,8 @@ if (!defined('PIWIK_INCLUDE_PATH')) {
 }
 
 require_once PIWIK_INCLUDE_PATH . '/core/bootstrap.php';
+
+StaticContainer::setEnvironment('tracker');
 
 @ignore_user_abort(true);
 

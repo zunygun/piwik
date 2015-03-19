@@ -10,7 +10,7 @@ namespace Piwik\CliMulti;
 
 use Piwik\Config;
 use Piwik\Container\StaticContainer;
-use Piwik\Db;
+use Piwik\DbHelper;
 use Piwik\Log;
 use Piwik\Option;
 use Piwik\Plugin\ConsoleCommand;
@@ -34,8 +34,6 @@ class RequestCommand extends ConsoleCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->recreateContainerWithWebEnvironment();
-
         $this->initHostAndQueryString($input);
 
         if ($this->isTestModeEnabled()) {
@@ -46,6 +44,8 @@ class RequestCommand extends ConsoleCommand
         } else {
             $indexFile = '/';
         }
+
+        $this->recreateContainerWithWebEnvironment(); // do after config / test environment stuff is dealt w/
 
         $indexFile .= 'index.php';
 
@@ -104,6 +104,6 @@ class RequestCommand extends ConsoleCommand
     private function resetDatabase()
     {
         Option::clearCache();
-        Db::destroyDatabaseObject();
+        DbHelper::disconnectDatabase();
     }
 }

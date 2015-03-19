@@ -70,4 +70,11 @@ interface AdapterInterface
      * @return bool
      */
     public function isConnectionUTF8();
+
+    /**
+     * Returns `true` if the DB is connected, `false` if otherwise.
+     *
+     * @return bool
+     */
+    public function isConnected();
 }

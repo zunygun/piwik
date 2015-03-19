@@ -31,6 +31,20 @@ class Mysqli extends Zend_Db_Adapter_Mysqli implements AdapterInterface
         parent::__construct($config);
     }
 
+    protected function _connect()
+    {
+        if ($this->_connection) {
+            return;
+        }
+
+        parent::_connect();
+
+        \Zend_Db_Table::setDefaultAdapter($this); // TODO: this code is repeated in both adapters.
+
+        // we don't want the connection information to appear in the logs
+        $this->resetConfig();
+    }
+
     /**
      * Reset the configuration variables in this adapter.
      */
@@ -177,5 +191,10 @@ class Mysqli extends Zend_Db_Adapter_Mysqli implements AdapterInterface
         $revision = (int)($version % 100);
 
         return $major . '.' . $minor . '.' . $revision;
+    }
+
+    public function isConnected()
+    {
+        return !empty($this->_connection);
     }
 }

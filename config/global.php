@@ -3,6 +3,7 @@
 use Interop\Container\ContainerInterface;
 use Piwik\Cache\Eager;
 use Piwik\SettingsServer;
+use Piwik\Tracker;
 
 return array(
 
@@ -55,4 +56,7 @@ return array(
     'Piwik\Translation\Loader\LoaderInterface' => DI\object('Piwik\Translation\Loader\LoaderCache')
         ->constructor(DI\link('Piwik\Translation\Loader\JsonFileLoader')),
 
+    'db.connection' => function () {
+        return \Piwik\Db::createDatabaseObject();
+    },
 );

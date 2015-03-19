@@ -9,6 +9,7 @@
 namespace Piwik;
 
 use Exception;
+use Piwik\Container\StaticContainer;
 use Piwik\DataAccess\TableMetadata;
 use Piwik\Db\Adapter;
 use Piwik\Tracker;
@@ -34,8 +35,6 @@ use Piwik\Tracker;
  */
 class Db
 {
-    private static $connection = null;
-
     private static $logQueries = true;
 
     /**
@@ -45,18 +44,10 @@ class Db
      */
     public static function get()
     {
-        if (SettingsServer::isTrackerApiRequest()) {
-            return Tracker::getDatabase();
-        }
-
-        if (!self::hasDatabaseObject()) {
-            self::createDatabaseObject();
-        }
-
-        return self::$connection;
+        return StaticContainer::get('db.connection');
     }
 
-    public static function getDatabaseConfig($dbConfig = null)
+    public static function getDatabaseConfig($dbConfig = null) // TODO: can we move this to DI config?
     {
         $config = Config::getInstance();
 
@@ -96,6 +87,7 @@ class Db
      *
      * @param array|null $dbConfig Connection parameters in an array. Defaults to the `[database]`
      *                             INI config section.
+     * @return Db\AdapterInterface
      */
     public static function createDatabaseObject($dbConfig = null)
     {
@@ -103,28 +95,34 @@ class Db
 
         $db = @Adapter::factory($dbConfig['adapter'], $dbConfig);
 
-        self::$connection = $db;
+        if (StaticContainer::getContainer()->has('db.connection')) {
+            StaticContainer::getContainer()->set('db.connection', $db);
+        }
+
+        return $db;
     }
 
     /**
      * Detect whether a database object is initialized / created or not.
      *
-     * @internal
+     * @deprecated TODO: remove if possible
      */
     public static function hasDatabaseObject()
     {
-        return isset(self::$connection);
+        return StaticContainer::getContainer()->has('db.connection');
     }
 
     /**
      * Disconnects and destroys the database connection.
      *
      * For tests.
+     *
+     * TODO: deprecate if possible
      */
     public static function destroyDatabaseObject()
     {
         DbHelper::disconnectDatabase();
-        self::$connection = null;
+        StaticContainer::getContainer()->set('db.connection', null);
     }
 
     /**

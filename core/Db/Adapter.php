@@ -39,15 +39,14 @@ class Adapter
 
         $className = self::getAdapterClassName($adapterName);
 
+        /** @var AdapterInterface $adapter */
         $adapter   = new $className($dbInfos);
 
+        /* TODO: remove & deprecate $connect param
         if ($connect) {
             $adapter->getConnection();
 
-            Zend_Db_Table::setDefaultAdapter($adapter);
-            // we don't want the connection information to appear in the logs
-            $adapter->resetConfig();
-        }
+        }*/
 
         return $adapter;
     }

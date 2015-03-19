@@ -37,18 +37,13 @@ class Mysql extends Zend_Db_Adapter_Pdo_Mysql implements AdapterInterface
         parent::__construct($config);
     }
 
-    /**
-     * Returns connection handle
-     *
-     * @return resource
-     */
-    public function getConnection()
+    protected function _connect()
     {
         if ($this->_connection) {
-            return $this->_connection;
+            return;
         }
 
-        $this->_connect();
+        parent::_connect();
 
         /**
          * Before MySQL 5.1.17, server-side prepared statements
@@ -64,7 +59,10 @@ class Mysql extends Zend_Db_Adapter_Pdo_Mysql implements AdapterInterface
         // MYSQL_ATTR_USE_BUFFERED_QUERY will use more memory when enabled
         // $this->_connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
 
-        return $this->_connection;
+        \Zend_Db_Table::setDefaultAdapter($this);
+
+        // we don't want the connection information to appear in the logs
+        $this->resetConfig();
     }
 
     /**
@@ -234,5 +232,10 @@ class Mysql extends Zend_Db_Adapter_Pdo_Mysql implements AdapterInterface
         $stmt = parent::query($sql, $bind);
         $this->cachePreparedStatement[$sql] = $stmt;
         return $stmt;
+    }
+
+    public function isConnected()
+    {
+        return !empty($this->_connection);
     }
 }

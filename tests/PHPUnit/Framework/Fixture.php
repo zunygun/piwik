@@ -173,7 +173,6 @@ class Fixture extends \PHPUnit_Framework_Assert
 
             DbHelper::createDatabase($this->dbName);
             DbHelper::disconnectDatabase();
-            Tracker::disconnectCachedDbConnection();
 
             // reconnect once we're sure the database exists
             Config::getInstance()->database['dbname'] = $this->dbName;
