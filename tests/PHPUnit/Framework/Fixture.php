@@ -240,6 +240,7 @@ class Fixture extends \PHPUnit_Framework_Assert
             return;
         }
 
+        $this->getTestEnvironment()->fixtureClass = get_class($this);
         $this->getTestEnvironment()->save();
         $this->getTestEnvironment()->executeSetupTestEnvHook();
         Piwik_TestingEnvironment::addSendMailHook();
