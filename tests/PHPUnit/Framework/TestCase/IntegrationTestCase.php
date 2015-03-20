@@ -9,6 +9,7 @@
 namespace Piwik\Tests\Framework\TestCase;
 
 use Piwik\Config;
+use Piwik\Container\StaticContainer;
 use Piwik\Db;
 use Piwik\Tests\Framework\Fixture;
 use Piwik\Cache as PiwikCache;
@@ -76,6 +77,9 @@ abstract class IntegrationTestCase extends SystemTestCase
 
         Config::getInstance()->setTestEnvironment();
 
+        StaticContainer::setEnvironment('test');
+        StaticContainer::clearContainer();
+
         if (!empty(self::$tableData)) {
             self::restoreDbTables(self::$tableData);
         }
@@ -90,6 +94,9 @@ abstract class IntegrationTestCase extends SystemTestCase
     public function tearDown()
     {
         static::$fixture->clearInMemoryCaches();
+
+        StaticContainer::setEnvironment('test');
+        StaticContainer::clearContainer();
 
         parent::tearDown();
     }

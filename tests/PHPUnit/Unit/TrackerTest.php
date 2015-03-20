@@ -8,6 +8,7 @@
 
 namespace Piwik\Tests\Unit;
 
+use Piwik\Container\StaticContainer;
 use Piwik\EventDispatcher;
 use Piwik\Piwik;
 use Piwik\Tracker\Request;
@@ -32,6 +33,11 @@ class TestTracker extends Tracker
     public function disalbeRecordStatistics()
     {
         $this->record = false;
+    }
+
+    protected function disconnectDatabase()
+    {
+        // disabled
     }
 }
 

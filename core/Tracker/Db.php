@@ -233,6 +233,16 @@ abstract class Db
     abstract public function isErrNo($e, $errno);
 
     /**
+     * Returns `true` if we're connected to the DB, `false` if otherwise.
+     *
+     * @return bool
+     */
+    public function isConnected()
+    {
+        return !empty($this->connection);
+    }
+
+    /**
      * Factory to create database objects
      *
      * @param array $configDb Database configuration
@@ -286,7 +296,6 @@ abstract class Db
         }
 
         $db = self::factory($configDb);
-        $db->connect();
 
         return $db;
     }

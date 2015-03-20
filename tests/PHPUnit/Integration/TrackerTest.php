@@ -10,6 +10,7 @@ namespace Piwik\Tests\Integration;
 
 use Piwik\Common;
 use Piwik\Config;
+use Piwik\Container\StaticContainer;
 use Piwik\EventDispatcher;
 use Piwik\Piwik;
 use Piwik\Plugin;
@@ -60,6 +61,9 @@ class TrackerTest extends IntegrationTestCase
         parent::setUp();
 
         Fixture::createWebsite('2014-01-01 00:00:00');
+
+        StaticContainer::pushEnvironment('tracker');
+        StaticContainer::clearContainer();
 
         $this->tracker = new TestTracker();
         $this->request = $this->buildRequest(array('idsite' => 1));
@@ -180,15 +184,21 @@ class TrackerTest extends IntegrationTestCase
 
     public function test_isDatabaseConnected_shouldReturnTrue_WhenDbIsConnected()
     {
-        $db = $this->tracker->getDatabase(); // make sure connected
+        $db = $this->tracker->getDatabase();
         $this->assertNotEmpty($db);
+
+        $this->assertFalse($this->tracker->isDatabaseConnected());
+
+        $db->fetch("SELECT DATABASE()"); // connect on first query
 
         $this->assertTrue($this->tracker->isDatabaseConnected());
     }
 
     public function test_disconnectDatabase_shouldDisconnectDb()
     {
-        $this->tracker->getDatabase(); // make sure connected
+        $db = $this->tracker->getDatabase(); // make sure connected
+        $db->fetch("SELECT DATABASE()");
+
         $this->assertTrue($this->tracker->isDatabaseConnected());
 
         $this->tracker->disconnectDatabase();

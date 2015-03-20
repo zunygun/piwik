@@ -64,6 +64,10 @@ class Mysql extends Db
      */
     public function connect()
     {
+        if ($this->connection) {
+            return;
+        }
+
         if (self::$profiling) {
             $timer = $this->initProfiler();
         }
@@ -183,9 +187,7 @@ class Mysql extends Db
      */
     public function query($query, $parameters = array())
     {
-        if (is_null($this->connection)) {
-            return false;
-        }
+        $this->connect();
 
         try {
             if (self::$profiling) {
@@ -217,6 +219,8 @@ class Mysql extends Db
      */
     public function lastInsertId()
     {
+        $this->connect();
+
         return $this->connection->lastInsertId();
     }
 
@@ -256,6 +260,8 @@ class Mysql extends Db
             return;
         }
 
+        $this->connect();
+
         if ( $this->connection->beginTransaction() ) {
             $this->activeTransaction = uniqid();
             return $this->activeTransaction;
@@ -273,6 +279,8 @@ class Mysql extends Db
         if ($this->activeTransaction != $xid || $this->activeTransaction === false) {
             return;
         }
+
+        $this->connect();
 
         $this->activeTransaction = false;
 
@@ -292,6 +300,8 @@ class Mysql extends Db
         if ($this->activeTransaction != $xid || $this->activeTransaction === false) {
             return;
         }
+
+        $this->connect();
 
         $this->activeTransaction = false;
 

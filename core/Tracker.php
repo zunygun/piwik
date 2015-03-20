@@ -195,7 +195,7 @@ class Tracker
      */
     public function isDatabaseConnected()
     {
-        return false; // !is_null(self::$db);
+        return StaticContainer::get('db.connection')->isConnected();
     }
 
     public static function getDatabase()
@@ -205,7 +205,11 @@ class Tracker
 
     protected function disconnectDatabase()
     {
-        StaticContainer::get('db.connection')->disconnect();
+        try {
+            StaticContainer::get('db.connection')->disconnect();
+        } catch (\Exception $ex) {
+            // pass
+        }
     }
 
     // for tests

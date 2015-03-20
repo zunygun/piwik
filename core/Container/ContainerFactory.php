@@ -23,7 +23,7 @@ class ContainerFactory
     /**
      * Optional environment config to load.
      *
-     * @var string|null
+     * @var string[]
      */
     private $environment;
 
@@ -33,9 +33,9 @@ class ContainerFactory
     private $definitions;
 
     /**
-     * @param string|null $environment Optional environment config to load.
+     * @param string[]|null $environment Optional environment configs to load.
      */
-    public function __construct($environment = null, array $definitions = array())
+    public function __construct(array $environment = array(), array $definitions = array())
     {
         $this->environment = $environment;
         $this->definitions = $definitions;
@@ -88,9 +88,11 @@ class ContainerFactory
             return;
         }
 
-        $file = sprintf('%s/config/environment/%s.php', PIWIK_USER_PATH, $this->environment);
+        foreach ($this->environment as $singleEnvironment) {
+            $file = sprintf('%s/config/environment/%s.php', PIWIK_USER_PATH, $singleEnvironment);
 
-        $builder->addDefinitions($file);
+            $builder->addDefinitions($file);
+        }
     }
 
     private function addPluginConfigs(ContainerBuilder $builder)

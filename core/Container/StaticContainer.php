@@ -27,7 +27,7 @@ class StaticContainer
     /**
      * Optional environment config to load.
      *
-     * @var bool
+     * @var string[]
      */
     private static $environment;
 
@@ -77,11 +77,25 @@ class StaticContainer
     /**
      * Set the application environment (cli, test, …) or null for the default one.
      *
-     * @param string|null $environment
+     * @param string|string[]|null $environment
      */
     public static function setEnvironment($environment)
     {
+        if (!is_array($environment)) {
+            $environment = array($environment);
+        }
+
         self::$environment = $environment;
+    }
+
+    /**
+     * Adds an environment to load to the existing list of environments.
+     *
+     * @param string $environment
+     */
+    public static function pushEnvironment($environment)
+    {
+        self::$environment[] = $environment;
     }
 
     public static function addDefinitions(array $definitions)
