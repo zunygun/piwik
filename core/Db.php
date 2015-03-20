@@ -109,20 +109,19 @@ class Db
      */
     public static function hasDatabaseObject()
     {
-        return StaticContainer::getContainer()->has('db.connection');
+        return self::get()->isConnected();
     }
 
     /**
-     * Disconnects and destroys the database connection.
+     * Disconnects the database connection.
      *
      * For tests.
      *
-     * TODO: deprecate if possible
+     * @deprecated
      */
     public static function destroyDatabaseObject()
     {
         DbHelper::disconnectDatabase();
-        StaticContainer::getContainer()->set('db.connection', null);
     }
 
     /**

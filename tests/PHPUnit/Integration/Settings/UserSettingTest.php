@@ -31,7 +31,8 @@ class UserSettingTest extends IntegrationTestCase
     public function test_constructor_shouldEstablishADatabaseConnection_AsSoonAsWeGetAValue()
     {
         $this->setSuperUser();
-        Db::destroyDatabaseObject();
+
+        $this->assertNotDbConnectionCreated();
 
         $setting = $this->buildUserSetting('testSetting', 'Test Setting');
 
@@ -45,7 +46,8 @@ class UserSettingTest extends IntegrationTestCase
     public function test_constructor_shouldEstablishADatabaseConnection_AsSoonAsWeSetAValue()
     {
         $this->setSuperUser();
-        Db::destroyDatabaseObject();
+
+        $this->assertNotDbConnectionCreated();
 
         $setting  = $this->buildUserSetting('testSetting', 'Test Setting');
         $settings = $this->createSettingsInstance();

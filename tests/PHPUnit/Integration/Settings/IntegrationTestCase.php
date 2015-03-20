@@ -30,7 +30,6 @@ class IntegrationTestCase extends \Piwik\Tests\Framework\TestCase\IntegrationTes
     {
         parent::setUp();
         Access::setSingletonInstance(null);
-        Db::destroyDatabaseObject();
         $this->settings = $this->createSettingsInstance();
     }
 

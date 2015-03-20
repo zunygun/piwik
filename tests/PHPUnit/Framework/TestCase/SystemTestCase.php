@@ -603,12 +603,12 @@ abstract class SystemTestCase extends PHPUnit_Framework_TestCase
 
     public function assertNotDbConnectionCreated($message = 'A database connection was created but should not.')
     {
-        self::assertFalse(Db::hasDatabaseObject(), $message);
+        self::assertFalse(!Db::get()->isConnected(), $message);
     }
 
     public function assertDbConnectionCreated($message = 'A database connection was not created but should.')
     {
-        self::assertTrue(Db::hasDatabaseObject(), $message);
+        self::assertTrue(Db::get()->isConnected(), $message);
     }
 
 }
