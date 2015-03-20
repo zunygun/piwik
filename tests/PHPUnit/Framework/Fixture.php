@@ -12,6 +12,7 @@ use Piwik\Cache\Backend\File;
 use Piwik\Cache as PiwikCache;
 use Piwik\Common;
 use Piwik\Config;
+use Piwik\Container\StaticContainer;
 use Piwik\DataAccess\ArchiveTableCreator;
 use Piwik\DataTable\Manager as DataTableManager;
 use Piwik\Date;
@@ -141,6 +142,8 @@ class Fixture extends \PHPUnit_Framework_Assert
 
     public function performSetUp($setupEnvironmentOnly = false)
     {
+        StaticContainer::addDefinitions($this->provideContainerConfig());
+
         try {
             if ($this->createConfig) {
                 Config::getInstance()->setTestEnvironment();
