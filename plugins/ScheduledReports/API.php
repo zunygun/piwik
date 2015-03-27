@@ -449,7 +449,7 @@ class API extends \Piwik\Plugin\API
         // render report
         $description = str_replace(array("\r", "\n"), ' ', $report['description']);
 
-        list($reportSubject, $reportTitle) = self::getReportSubjectAndReportTitle(Site::getNameFor($idSite), $report['reports']);
+        list($reportSubject, $reportTitle) = self::getReportSubjectAndReportTitle(html_entity_decode(Site::getNameFor($idSite)), $report['reports']);
         $filename = "$reportTitle - $prettyDate - $description";
 
 	// if reporting for a segment, use the segment's name in the title
