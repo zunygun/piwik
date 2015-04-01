@@ -14,8 +14,8 @@ use Piwik\DataTable;
 use Piwik\DataTable\Renderer;
 use Piwik\DataTable\DataTableInterface;
 use Piwik\DataTable\Filter\ColumnDelete;
+use Piwik\DataTable\Filter\Pattern;
 use Piwik\Plugin\Report;
-use Piwik\Plugins\API\Renderer\Original;
 
 /**
  */
@@ -196,7 +196,17 @@ class ResponseBuilder
                 $columnDelete = new ColumnDelete(new DataTable(), $hideColumns, $showColumns);
                 $array = $columnDelete->filter($array);
             }
-        } else if (is_numeric($firstKey)) {
+        }
+
+        if (is_numeric($firstKey)) {
+            $columns = Common::getRequestVar('filter_column', false, 'array', $this->request);
+            $pattern = Common::getRequestVar('filter_pattern', '', 'string', $this->request);
+
+            if ($columns != array(false) && $pattern !== '') {
+                $pattern = new Pattern(new DataTable(), $columns, $pattern);
+                $array   = $pattern->filterArray($array);
+            }
+
             $limit  = Common::getRequestVar('filter_limit', -1, 'integer', $this->request);
             $offset = Common::getRequestVar('filter_offset', '0', 'integer', $this->request);
 

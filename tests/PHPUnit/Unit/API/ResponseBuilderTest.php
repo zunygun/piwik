@@ -271,4 +271,50 @@ class ResponseBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($input, $response);
     }
+
+    public function test_getResponse_shouldApplyPattern_IfFilterColumnAndPatternIsGiven()
+    {
+        $input = array(
+            0 => array('name' => 'google', 'url' => 'www.google.com'),
+            1 => array('name' => 'ask', 'url' => 'www.ask.com'),
+            2 => array('name' => 'piwik', 'url' => 'piwik.org'),
+            3 => array('url' => 'nz.yahoo.com'),
+            4 => array('name' => 'amazon', 'url' => 'amazon.com'),
+            5 => array('url' => 'nz.piwik.org'),
+        );
+
+        $builder  = new ResponseBuilder('php', array(
+            'serialize' => 0,
+            'filter_limit' => -1,
+            'filter_column' => array('name', 'url'),
+            'filter_pattern' => 'piwik'
+        ));
+        $response = $builder->getResponse($input);
+
+        $expected = array(
+            2 => array('name' => 'piwik', 'url' => 'piwik.org'),
+            5 => array('url' => 'nz.piwik.org'),
+        );
+        $this->assertEquals($expected, $response);
+    }
+
+    public function test_getResponse_shouldBeAbleToApplyColumFilterAndLimitFilterOnIndexedAssociativeArray()
+    {
+        $input = array();
+        for ($i = 0; $i < 10; $i++) {
+            $input[] = array('test' => 'two' . $i, 'test2' => 'three');
+        }
+
+        $limit = 3;
+
+        $builder  = new ResponseBuilder('php', array(
+            'serialize' => 0,
+            'filter_limit' => $limit,
+            'showColumns' => 'test'
+        ));
+        $response = $builder->getResponse($input);
+
+        $this->assertCount($limit, $response);
+        $this->assertEquals(array('test' => 'two0'), array_shift($response));
+    }
 }

@@ -13,7 +13,6 @@
 
         return {
             getCurrencyList: getCurrencyList(),
-            getSitesWithAdminAccess: getSitesWithAdminAccess(),
             getTimezonesList: getTimezonesList(),
             isTimezoneSupportEnabled: isTimezoneSupportEnabled(),
             getGlobalSettings: getGlobalSettings()
@@ -21,10 +20,6 @@
 
         function getCurrencyList () {
             return api.fetchApi('SitesManager.getCurrencyList', api.noop);
-        }
-
-        function getSitesWithAdminAccess () {
-            return api.fetchApi('SitesManager.getSitesWithAdminAccess', api.noop, {fetchAliasUrls: true});
         }
 
         function getTimezonesList () {

@@ -63,6 +63,7 @@
         "SelectDefaultTimezone": "You can select the time zone to select by default for new websites.",
         "ShowTrackingTag": "View Tracking code",
         "Sites": "Websites",
+        "SitesPagination": "%s - %s",
         "SiteSearchUse": "You can use Piwik to track and report what visitors are searching in your website's internal search engine.",
         "SiteWithoutDataTitle": "No data has been recorded yet",
         "SiteWithoutDataDescription": "No analytics data has been tracked for this website yet.",
