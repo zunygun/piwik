@@ -61,10 +61,13 @@ if (isset($_SERVER['argv']) && Piwik\Console::isSupported()) {
     $console->run();
 } else { // if running via web request, use CronArchive directly
 
+    // We can run the archive in CLI with `php-cgi` so we have to configure the container just like in CLI
+    $environment = Piwik\Common::isPhpCliMode() ? 'cli' : null;
+
+    // This will bootstrap the application
+    $archiver = new Piwik\CronArchive($environment);
+
     if (Piwik\Common::isPhpCliMode()) {
-        // We can run the archive in CLI with `php-cgi` so we have to configure the container/logger
-        // just like for CLI
-        StaticContainer::setEnvironment('cli');
         /** @var ConsoleHandler $consoleLogHandler */
         $consoleLogHandler = StaticContainer::get('Symfony\Bridge\Monolog\Handler\ConsoleHandler');
         $consoleLogHandler->setOutput(new ConsoleOutput(OutputInterface::VERBOSITY_VERBOSE));
@@ -76,8 +79,6 @@ if (isset($_SERVER['argv']) && Piwik\Console::isSupported()) {
         $handler->setFormatter(StaticContainer::get('Piwik\Plugins\Monolog\Formatter\LineMessageFormatter'));
         $logger->pushHandler($handler);
     }
-
-    $archiver = new Piwik\CronArchive();
 
     if (!Piwik\Common::isPhpCliMode()) {
         $token_auth = Piwik\Common::getRequestVar('token_auth', '', 'string');

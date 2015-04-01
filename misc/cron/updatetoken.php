@@ -11,6 +11,7 @@
 
 namespace Piwik;
 
+use Piwik\Application\Bootstrap;
 use Piwik\Container\StaticContainer;
 
 if (!defined('PIWIK_INCLUDE_PATH')) {
@@ -33,10 +34,13 @@ if (!Common::isPhpCliMode()) {
 
 $testmode = in_array('--testmode', $_SERVER['argv']);
 if ($testmode) {
+    // TODO
     require_once PIWIK_INCLUDE_PATH . "/tests/PHPUnit/TestingEnvironment.php";
     \Piwik_TestingEnvironment::addHooks();
 }
 
+$bootstrap = new Bootstrap('cli');
+$bootstrap->init();
 
 function getPiwikDomain()
 {

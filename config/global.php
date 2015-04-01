@@ -22,6 +22,9 @@ return array(
         return $root . '/tmp' . $instanceId;
     },
 
+    'Piwik\Config' => DI\object()
+        ->constructor(DI\link('Piwik\Config\IniFileChain')),
+
     'path.cache' => DI\string('{path.tmp}/cache/tracker/'),
 
     'Piwik\Cache\Eager' => function (ContainerInterface $c) {

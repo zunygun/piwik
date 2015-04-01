@@ -12,6 +12,7 @@ namespace Piwik;
 use Exception;
 use Piwik\API\Request;
 use Piwik\API\ResponseBuilder;
+use Piwik\Application\Bootstrap;
 use Piwik\Container\StaticContainer;
 use Piwik\Exception\AuthenticationFailedException;
 use Piwik\Exception\DatabaseSchemaIsNewerThanCodebaseException;
@@ -196,7 +197,7 @@ class FrontController extends Singleton
     {
         $exceptionToThrow = false;
         try {
-            Config::getInstance()->database; // access property to check if the local file exists
+            Config::getInstance()->checkLocalConfigFound();
         } catch (Exception $exception) {
             Log::debug($exception);
 
@@ -222,16 +223,22 @@ class FrontController extends Singleton
      * - inits the DB connection,
      * - etc.
      *
+     * @param string|null $environment The environment to initialize. This parameter is used by misc/cron/archive.php
+     *                                 and should be removed when this script is removed.
+     *
      * @throws Exception
      * @return void
      */
-    public function init()
+    public function init($environment = null)
     {
         static $initialized = false;
         if ($initialized) {
             return;
         }
         $initialized = true;
+
+        $bootstrap = new Bootstrap($environment);
+        $bootstrap->init();
 
         $exceptionToThrow = self::createConfigObject();
 
@@ -251,9 +258,6 @@ class FrontController extends Singleton
         $this->handleMaintenanceMode();
         $this->handleProfiler();
         $this->handleSSLRedirection();
-
-        Plugin\Manager::getInstance()->loadPluginTranslations();
-        Plugin\Manager::getInstance()->loadActivatedPlugins();
 
         if ($exceptionToThrow) {
             throw $exceptionToThrow;

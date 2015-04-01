@@ -1,5 +1,6 @@
 <?php
 
+use Piwik\Application\Bootstrap;
 use Piwik\Container\StaticContainer;
 use Piwik\Http;
 use Piwik\Intl\Locale;
@@ -42,9 +43,7 @@ if (getenv('PIWIK_USE_XHPROF') == 1) {
     \Piwik\Profiler::setupProfilerXHProf();
 }
 
-// setup container for tests
-StaticContainer::setEnvironment('test');
-
+// Bootstrap the application in test environment
 \Piwik\Config::getInstance()->setTestEnvironment();
 
 // require test fixtures
@@ -113,7 +112,6 @@ if (!SettingsPiwik::isPiwikInstalled()) {
 }
 
 $config = Config::getInstance();
-$config->init();
 prepareServerVariables($config);
 prepareTestDatabaseConfig($config);
 checkPiwikSetupForTests();

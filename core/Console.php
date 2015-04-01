@@ -8,7 +8,7 @@
  */
 namespace Piwik;
 
-use Piwik\Config\ConfigNotFoundException;
+use Piwik\Application\Bootstrap;
 use Piwik\Container\StaticContainer;
 use Piwik\Plugin\Manager as PluginManager;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
@@ -24,6 +24,8 @@ class Console extends Application
     {
         $this->checkCompatibility();
 
+        $this->init();
+
         parent::__construct();
 
         $option = new InputOption('piwik-domain',
@@ -33,8 +35,12 @@ class Console extends Application
         );
 
         $this->getDefinition()->addOption($option);
+    }
 
-        StaticContainer::setEnvironment('cli');
+    private function init()
+    {
+        $bootstrap = new Bootstrap('cli');
+        $bootstrap->init();
     }
 
     public function doRun(InputInterface $input, OutputInterface $output)
@@ -42,13 +48,6 @@ class Console extends Application
         $this->initPiwikHost($input);
         $this->initConfig($output);
         $this->initLoggerOutput($output);
-
-        try {
-            self::initPlugins();
-        } catch (ConfigNotFoundException $e) {
-            // Piwik not installed yet, no config file?
-            Log::warning($e->getMessage());
-        }
 
         $commands = $this->getAvailableCommands();
 
@@ -147,7 +146,6 @@ class Console extends Application
 
         try {
             $config->checkLocalConfigFound();
-            return $config;
         } catch (\Exception $e) {
             $output->writeln($e->getMessage() . "\n");
         }
@@ -166,12 +164,6 @@ class Console extends Application
         /** @var ConsoleHandler $consoleLogHandler */
         $consoleLogHandler = StaticContainer::get('Symfony\Bridge\Monolog\Handler\ConsoleHandler');
         $consoleLogHandler->setOutput($output);
-    }
-
-    public static function initPlugins()
-    {
-        Plugin\Manager::getInstance()->loadActivatedPlugins();
-        Plugin\Manager::getInstance()->loadPluginTranslations();
     }
 
     private function getDefaultPiwikCommands()

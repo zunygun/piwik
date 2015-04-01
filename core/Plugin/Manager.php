@@ -13,6 +13,7 @@ use Piwik\Cache;
 use Piwik\Columns\Dimension;
 use Piwik\Config as PiwikConfig;
 use Piwik\Config;
+use Piwik\Config\IniFileChain;
 use Piwik\Container\StaticContainer;
 use Piwik\Db;
 use Piwik\EventDispatcher;
@@ -22,7 +23,6 @@ use Piwik\Option;
 use Piwik\Piwik;
 use Piwik\Plugin;
 use Piwik\PluginDeactivatedException;
-use Piwik\Singleton;
 use Piwik\Theme;
 use Piwik\Tracker;
 use Piwik\Translation\Translator;
@@ -35,10 +35,8 @@ require_once PIWIK_INCLUDE_PATH . '/core/EventDispatcher.php';
 
 /**
  * The singleton that manages plugin loading/unloading and installation/uninstallation.
- *
- * @method static Manager getInstance()
  */
-class Manager extends Singleton
+class Manager
 {
     protected $pluginsToLoad = array();
 
@@ -92,6 +90,24 @@ class Manager extends Singleton
     );
 
     private $trackerPluginsNotToLoad = array();
+
+    /**
+     * @var IniFileChain
+     */
+    private $iniFileChain;
+
+    /**
+     * @return self
+     */
+    public static function getInstance()
+    {
+        return StaticContainer::get('Piwik\Plugin\Manager');
+    }
+
+    public function __construct(IniFileChain $iniFileChain)
+    {
+        $this->iniFileChain = $iniFileChain;
+    }
 
     /**
      * Loads plugin that are enabled
@@ -793,7 +809,8 @@ class Manager extends Singleton
 
     public function getActivatedPluginsFromConfig()
     {
-        $plugins = @Config::getInstance()->Plugins['Plugins'];
+        $section = $this->iniFileChain->get('Plugins');
+        $plugins = $section['Plugins'];
 
         return $this->makePluginsToLoad($plugins);
     }
@@ -863,13 +880,7 @@ class Manager extends Singleton
      */
     public static function getAllPluginsNames()
     {
-        $pluginsToLoad = array_merge(
-            PiwikConfig::getInstance()->Plugins['Plugins'],
-            self::getInstance()->readPluginsDirectory(),
-            self::getInstance()->getCorePluginsDisabledByDefault()
-        );
-        $pluginsToLoad = array_values(array_unique($pluginsToLoad));
-        return $pluginsToLoad;
+        return self::getInstance()->readPluginsDirectory();
     }
 
     /**
@@ -1262,6 +1273,7 @@ class Manager extends Singleton
      */
     protected function getPluginsFromGlobalIniConfigFile()
     {
+        // TODO get without using the Config
         $pluginsBundledWithPiwik = PiwikConfig::getInstance()->getFromGlobalConfig('Plugins');
         $pluginsBundledWithPiwik = $pluginsBundledWithPiwik['Plugins'];
         return $pluginsBundledWithPiwik;

@@ -227,12 +227,12 @@ class CronArchive
      * @param string|null $processNewSegmentsFrom When to archive new segments from. See [General] process_new_segments_from
      *                                            for possible values.
      */
-    public function __construct($piwikUrl = false, $processNewSegmentsFrom = null)
+    public function __construct($piwikUrl = false, $processNewSegmentsFrom = null, $environment = null)
     {
         $this->formatter = new Formatter();
 
         $this->initPiwikHost($piwikUrl);
-        $this->initCore();
+        $this->initCore($environment);
         $this->initTokenAuth();
 
         $processNewSegmentsFrom = $processNewSegmentsFrom ?: StaticContainer::get('ini.General.process_new_segments_from');
@@ -922,10 +922,10 @@ class CronArchive
     /**
      * Init Piwik, connect DB, create log & config objects, etc.
      */
-    private function initCore()
+    private function initCore($environment)
     {
         try {
-            FrontController::getInstance()->init();
+            FrontController::getInstance()->init($environment);
         } catch (Exception $e) {
             throw new Exception("ERROR: During Piwik init, Message: " . $e->getMessage());
         }

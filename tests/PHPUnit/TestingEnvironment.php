@@ -146,25 +146,6 @@ class Piwik_TestingEnvironment
             \Piwik\Profiler::setupProfilerXHProf($mainRun = false, $setupDuringTracking = true);
         }
 
-        if ($testingEnvironment->dontUseTestConfig) {
-            Config::setSingletonInstance(new Config(
-                $testingEnvironment->configFileGlobal, $testingEnvironment->configFileLocal, $testingEnvironment->configFileCommon
-            ));
-        }
-
-        // Apply DI config from the fixture
-        if ($testingEnvironment->fixtureClass) {
-            $fixtureClass = $testingEnvironment->fixtureClass;
-            if (class_exists($fixtureClass)) {
-                /** @var Fixture $fixture */
-                $fixture = new $fixtureClass;
-                $diConfig = $fixture->provideContainerConfig();
-                if (!empty($diConfig)) {
-                    StaticContainer::addDefinitions($diConfig);
-                }
-            }
-        }
-
         \Piwik\Cache\Backend\File::$invalidateOpCacheBeforeRead = true;
 
         Piwik::addAction('Access.createAccessSingleton', function($access) use ($testingEnvironment) {
@@ -173,6 +154,7 @@ class Piwik_TestingEnvironment
                 \Piwik\Access::setSingletonInstance($access);
             }
         });
+        // TODO can we get rid of that code?
         if (!$testingEnvironment->dontUseTestConfig) {
             Piwik::addAction('Config.createConfigSingleton', function(Config $config, &$cache) use ($testingEnvironment) {
                 $config->setTestEnvironment($testingEnvironment->configFileLocal, $testingEnvironment->configFileGlobal, $testingEnvironment->configFileCommon);

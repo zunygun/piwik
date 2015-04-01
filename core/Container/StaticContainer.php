@@ -13,7 +13,7 @@ use DI\Container;
 /**
  * This class provides a static access to the container.
  *
- * @deprecated This class is introduced only to keep BC with the current static architecture. It will be removed in 3.0.
+ * @deprecated This class is introduced only to keep BC with the current static architecture. It will be removed at some point.
  *     - it is global state (that class makes the container a global variable)
  *     - using the container directly is the "service locator" anti-pattern (which is not dependency injection)
  */
@@ -27,16 +27,11 @@ class StaticContainer
     /**
      * Optional environment config to load.
      *
+     * TODO remove
+     *
      * @var bool
      */
     private static $environment;
-
-    /**
-     * Definitions to register in the container.
-     *
-     * @var array
-     */
-    private static $definitions = array();
 
     /**
      * @return Container
@@ -44,12 +39,15 @@ class StaticContainer
     public static function getContainer()
     {
         if (self::$container === null) {
-            self::$container = self::createContainer();
+            throw new \Exception('The container has not been initialized');
         }
 
         return self::$container;
     }
 
+    /**
+     * TODO remove
+     */
     public static function clearContainer()
     {
         self::$container = null;
@@ -66,27 +64,15 @@ class StaticContainer
     }
 
     /**
-     * @link http://php-di.org/doc/container-configuration.html
-     */
-    private static function createContainer()
-    {
-        $containerFactory = new ContainerFactory(self::$environment, self::$definitions);
-        return $containerFactory->create();
-    }
-
-    /**
      * Set the application environment (cli, test, …) or null for the default one.
      *
      * @param string|null $environment
+     *
+     * TODO remove
      */
     public static function setEnvironment($environment)
     {
         self::$environment = $environment;
-    }
-
-    public static function addDefinitions(array $definitions)
-    {
-        self::$definitions = $definitions;
     }
 
     /**

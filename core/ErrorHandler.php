@@ -8,6 +8,7 @@
 
 namespace Piwik;
 
+use Piwik\Container\StaticContainer;
 use Piwik\Exception\ErrorException;
 
 /**
@@ -95,7 +96,10 @@ class ErrorHandler
             case E_DEPRECATED:
             case E_USER_DEPRECATED:
             default:
-                Log::warning(self::createLogMessage($errno, $errstr, $errfile, $errline));
+                try {
+                    Log::warning(self::createLogMessage($errno, $errstr, $errfile, $errline));
+                } catch (\Exception $e) {
+                }
                 break;
         }
     }

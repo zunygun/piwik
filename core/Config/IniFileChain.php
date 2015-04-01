@@ -51,7 +51,7 @@ class IniFileChain
      * @param string[] $defaultSettingsFiles The list of paths to INI files w/ the default setting values.
      * @param string|null $userSettingsFile The path to the user settings file.
      */
-    public function __construct(array $defaultSettingsFiles = array(), $userSettingsFile = null)
+    public function __construct(array $defaultSettingsFiles, $userSettingsFile)
     {
         $this->reload($defaultSettingsFiles, $userSettingsFile);
     }

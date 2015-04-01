@@ -9,6 +9,7 @@
 namespace Piwik;
 
 use Exception;
+use Piwik\Application\Bootstrap;
 use Piwik\Plugins\BulkTracking\Tracker\Requests;
 use Piwik\Plugins\PrivacyManager\Config as PrivacyManagerConfig;
 use Piwik\Tracker\Db as TrackerDb;
@@ -63,7 +64,10 @@ class Tracker
     {
         SettingsServer::setIsTrackerApiRequest();
         $GLOBALS['PIWIK_TRACKER_DEBUG'] = self::isDebugEnabled();
-        PluginManager::getInstance()->loadTrackerPlugins();
+
+        // Initialize the container and tracker plugins
+        $bootstrap = new Bootstrap(null, true);
+        $bootstrap->init();
     }
 
     private function init()

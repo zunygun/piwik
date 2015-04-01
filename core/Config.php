@@ -10,9 +10,11 @@
 namespace Piwik;
 
 use Exception;
+use Piwik\Application\Bootstrap;
 use Piwik\Config\IniFileChain;
 use Piwik\Config\ConfigNotFoundException;
-use Piwik\Ini\IniReadingException;
+use Piwik\Config\IniFileChainFactory;
+use Piwik\Container\StaticContainer;
 
 /**
  * Singleton that provides read & write access to Piwik's INI configuration.
@@ -38,10 +40,8 @@ use Piwik\Ini\IniReadingException;
  *
  *     Config::getInstance()->MySection = array('myoption' => 1);
  *     Config::getInstance()->forceSave();
- *
- * @method static Config getInstance()
  */
-class Config extends Singleton
+class Config
 {
     const DEFAULT_LOCAL_CONFIG_PATH = '/config/config.ini.php';
     const DEFAULT_COMMON_CONFIG_PATH = '/config/common.config.ini.php';
@@ -66,13 +66,35 @@ class Config extends Singleton
 
     private $initialized = false;
 
-    public function __construct($pathGlobal = null, $pathLocal = null, $pathCommon = null)
+    /**
+     * @return Config
+     */
+    public static function getInstance()
     {
-        $this->pathGlobal = $pathGlobal ?: self::getGlobalConfigPath();
-        $this->pathCommon = $pathCommon ?: self::getCommonConfigPath();
-        $this->pathLocal = $pathLocal ?: self::getLocalConfigPath();
+        return StaticContainer::get('Piwik\Config');
+    }
 
-        $this->settings = new IniFileChain();
+    /**
+     * @deprecated
+     */
+    public static function unsetInstance()
+    {
+    }
+
+    /**
+     * @deprecated
+     */
+    public static function setSingletonInstance($instance)
+    {
+    }
+
+    public function __construct(IniFileChain $iniFileChain)
+    {
+        $this->pathGlobal = self::getGlobalConfigPath();
+        $this->pathCommon = self::getCommonConfigPath();
+        $this->pathLocal = self::getLocalConfigPath();
+
+        $this->reload();
     }
 
     /**
@@ -107,6 +129,8 @@ class Config extends Singleton
 
     /**
      * Enable test environment
+     *
+     * TODO this should be moved into a "TestApplication" class.
      *
      * @param string $pathLocal
      * @param string $pathGlobal
@@ -144,6 +168,10 @@ class Config extends Singleton
         // for unit tests, we set that no plugin is installed. This will force
         // the test initialization to create the plugins tables, execute ALTER queries, etc.
         $this->PluginsInstalled = array('PluginsInstalled' => array());
+
+        // Re-bootstrap the application using the modified configuration since the plugin list has changed
+        $bootstrap = new Bootstrap('test', null, $this->settings);
+        $bootstrap->init();
     }
 
     /**
@@ -151,7 +179,7 @@ class Config extends Singleton
      *
      * @return string
      */
-    protected static function getGlobalConfigPath()
+    public static function getGlobalConfigPath()
     {
         return PIWIK_USER_PATH . self::DEFAULT_GLOBAL_CONFIG_PATH;
     }
@@ -321,21 +349,8 @@ class Config extends Singleton
 
         $inTrackerRequest = SettingsServer::isTrackerApiRequest();
 
-        // read defaults from global.ini.php
-        if (!is_readable($this->pathGlobal) && $inTrackerRequest) {
-            throw new Exception(Piwik::translate('General_ExceptionConfigurationFileNotFound', array($this->pathGlobal)));
-        }
-
-        try {
-            $this->settings->reload(array($this->pathGlobal, $this->pathCommon), $this->pathLocal);
-        } catch (IniReadingException $e) {
-            if ($inTrackerRequest) {
-                throw $e;
-            }
-        }
-
-        // decode section datas
-        $this->decodeValues($this->settings->getAll());
+        $factory = new IniFileChainFactory($this->pathGlobal, $this->pathLocal, $this->pathCommon);
+        $this->settings = $factory->create();
 
         // Check config.ini.php last
         if (!$inTrackerRequest) {
@@ -367,11 +382,11 @@ class Config extends Singleton
      * @param mixed $values
      * @return mixed
      */
-    protected function decodeValues(&$values)
+    public static function decodeValues(&$values)
     {
         if (is_array($values)) {
             foreach ($values as &$value) {
-                $value = $this->decodeValues($value);
+                $value = self::decodeValues($value);
             }
             return $values;
         } elseif (is_string($values)) {
@@ -413,11 +428,12 @@ class Config extends Singleton
     public function &__get($name)
     {
         if (!$this->initialized) {
-            $this->reload(array($this->pathGlobal, $this->pathCommon), $this->pathLocal);
+            $this->reload();
 
             // must be called here, not in init(), since setTestEnvironment() calls init(). (this avoids
             // infinite recursion)
             $allSettings =& $this->settings->getAll();
+            // TODO
             Piwik::postTestEvent('Config.createConfigSingleton', array($this, &$allSettings));
         }
 
@@ -462,9 +478,9 @@ class Config extends Singleton
             $header .= "; file automatically generated or modified by Piwik; you can manually override the default values in global.ini.php by redefining them in this file.\n";
             $dumpedString = $this->settings->dumpChanges($header);
 
-            $this->decodeValues($this->settings->getAll());
+            self::decodeValues($this->settings->getAll());
         } catch (Exception $ex) {
-            $this->decodeValues($this->settings->getAll());
+            self::decodeValues($this->settings->getAll());
 
             throw $ex;
         }

@@ -6,6 +6,7 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
+use Piwik\Application\Bootstrap;
 use Piwik\Container\StaticContainer;
 use Piwik\FrontController;
 use Symfony\Bridge\Monolog\Handler\ConsoleHandler;
@@ -27,11 +28,12 @@ set_time_limit(0);
 $GLOBALS['PIWIK_TRACKER_DEBUG'] = false;
 define('PIWIK_ENABLE_DISPATCH', false);
 
+$environment = Piwik\Common::isPhpCliMode() ? 'cli' : null;
+$bootstrap = new Bootstrap($environment);
+$bootstrap->init();
+
 if (Piwik\Common::isPhpCliMode()) {
-    StaticContainer::setEnvironment('cli');
     /** @var ConsoleHandler $consoleLogHandler */
     $consoleLogHandler = StaticContainer::get('Symfony\Bridge\Monolog\Handler\ConsoleHandler');
     $consoleLogHandler->setOutput(new ConsoleOutput());
 }
-
-FrontController::getInstance()->init();
