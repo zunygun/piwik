@@ -232,12 +232,12 @@ class ResponseBuilder
 
         // "api_datatable_default_limit" is set by API\Controller if no filter_limit is specified by the user.
         // it holds the number of the configured default limit.
-        $limitSetBySystem = Common::getRequestVar('api_datatable_default_limit', -1, 'integer', $this->request);
+        $limitSetBySystem = Common::getRequestVar('api_datatable_default_limit', -2, 'integer', $this->request);
 
         // we ignore the limit if the datatable_default_limit was set by the system as this default filter_limit is
         // only meant for dataTables but not for arrays. This way we stay BC as filter_limit was not applied pre
         // Piwik 2.6 and some fixes were made in Piwik 2.13.
-        $wasFilterLimitSetBySystem = $limitSetBySystem !== -1;
+        $wasFilterLimitSetBySystem = $limitSetBySystem !== -2;
 
         // we check for "$limitSetBySystem === $limit" as an API method could request another API method with
         // another limit. In this case we need to apply it again.

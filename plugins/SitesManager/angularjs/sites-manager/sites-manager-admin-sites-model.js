@@ -81,7 +81,7 @@
             var params = {
                 method: 'SitesManager.getSitesWithAdminAccess',
                 fetchAliasUrls: true,
-                filter_offset: model.offsetStart,
+                filter_offset: model.currentPage * model.pageSize,
                 filter_limit: model.pageSize,
             };
 
