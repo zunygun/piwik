@@ -14,6 +14,7 @@ use Piwik\API\Request;
 use Piwik\Common;
 use Piwik\Config;
 use Piwik\Piwik;
+use Piwik\Plugin\Report;
 use Piwik\Url;
 use Piwik\View;
 
@@ -25,7 +26,7 @@ class Controller extends \Piwik\Plugin\Controller
     function index()
     {
         // when calling the API through http, we limit the number of returned results
-        if (!isset($_GET['filter_limit'])) {
+        if ($this->shouldSetDefaultLimit()) {
             $_GET['filter_limit'] = Config::getInstance()->General['API_datatable_default_limit'];
         }
 
@@ -37,6 +38,34 @@ class Controller extends \Piwik\Plugin\Controller
         }
 
         return $response;
+    }
+
+    /**
+     * We want to apply the default limit only if a report is requested. Not for API's like SitesManager or
+     * UsersManager. This is only for BC at this moment.
+     * @return bool
+     * @throws \Exception
+     */
+    private function shouldSetDefaultLimit()
+    {
+        if (isset($_GET['filter_limit'])) {
+            return false;
+        }
+
+        $method = Common::getRequestVar('module', '', 'string');
+        if ($method === 'API.getProcessedReport') {
+            // this is a report for sure
+            return true;
+        }
+
+        if ($method === 'API.getBulkRequest') {
+            return true;
+        }
+
+        list($module, $action) = explode('.', $method);
+        $report = Report::factory($module, $action);
+
+        return !empty($report);
     }
 
     public function listAllMethods()
