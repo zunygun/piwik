@@ -44,7 +44,7 @@ class StaticContainer
     public static function getContainer()
     {
         if (self::$container === null) {
-            self::$container = self::createContainer();
+            throw new \Exception("Container is not available yet.");
         }
 
         return self::$container;
@@ -66,15 +66,6 @@ class StaticContainer
     }
 
     /**
-     * @link http://php-di.org/doc/container-configuration.html
-     */
-    private static function createContainer()
-    {
-        $containerFactory = new ContainerFactory(self::$environment, self::$definitions);
-        return $containerFactory->create();
-    }
-
-    /**
      * Set the application environment (cli, test, …) or null for the default one.
      *
      * @param string|null $environment
@@ -89,6 +80,11 @@ class StaticContainer
         self::$definitions = $definitions;
     }
 
+    public static function getDefinitions()
+    {
+        return self::$definitions;
+    }
+
     /**
      * Proxy to Container::get()
      *
@@ -99,5 +95,10 @@ class StaticContainer
     public static function get($name)
     {
         return self::getContainer()->get($name);
+    }
+
+    public static function getEnvironment()
+    {
+        return self::$environment;
     }
 }

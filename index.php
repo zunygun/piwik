@@ -8,6 +8,8 @@
  * @package Piwik
  */
 
+use Piwik\Application\Bootstrap;
+
 if (!defined('PIWIK_DOCUMENT_ROOT')) {
     define('PIWIK_DOCUMENT_ROOT', dirname(__FILE__) == '/' ? '' : dirname(__FILE__));
 }
@@ -19,6 +21,9 @@ if (!defined('PIWIK_INCLUDE_PATH')) {
 }
 
 require_once PIWIK_INCLUDE_PATH . '/core/bootstrap.php';
+
+$initialBootstrapper = new Bootstrap(null);
+$initialBootstrapper->init();
 
 if (!defined('PIWIK_PRINT_ERROR_BACKTRACE')) {
     define('PIWIK_PRINT_ERROR_BACKTRACE', false);

@@ -8,6 +8,7 @@
  * @package Piwik
  */
 
+use Piwik\Application\Bootstrap;
 use Piwik\Tracker\RequestSet;
 use Piwik\Tracker;
 use Piwik\Tracker\Handler;
@@ -47,6 +48,9 @@ require_once PIWIK_INCLUDE_PATH . '/core/Translate.php';
 require_once PIWIK_INCLUDE_PATH . '/core/Tracker/Cache.php';
 require_once PIWIK_INCLUDE_PATH . '/core/Tracker/Request.php';
 require_once PIWIK_INCLUDE_PATH . '/core/Cookie.php';
+
+$initialBootstrapper = new Bootstrap(null);
+$initialBootstrapper->init();
 
 Tracker::loadTrackerEnvironment();
 

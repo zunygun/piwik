@@ -151,7 +151,7 @@ class Config extends Singleton
      *
      * @return string
      */
-    protected static function getGlobalConfigPath()
+    public static function getGlobalConfigPath()
     {
         return PIWIK_USER_PATH . self::DEFAULT_GLOBAL_CONFIG_PATH;
     }

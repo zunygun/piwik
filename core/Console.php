@@ -8,6 +8,7 @@
  */
 namespace Piwik;
 
+use Piwik\Application\Bootstrap;
 use Piwik\Config\ConfigNotFoundException;
 use Piwik\Container\StaticContainer;
 use Piwik\Plugin\Manager as PluginManager;
@@ -34,7 +35,8 @@ class Console extends Application
 
         $this->getDefinition()->addOption($option);
 
-        StaticContainer::setEnvironment('cli');
+        $bootstrap = new Bootstrap('cli');
+        $bootstrap->init();
     }
 
     public function doRun(InputInterface $input, OutputInterface $output)

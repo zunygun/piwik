@@ -11,6 +11,7 @@ namespace Piwik\Container;
 use DI\Container;
 use DI\ContainerBuilder;
 use Doctrine\Common\Cache\ArrayCache;
+use Piwik\Application\PluginList;
 use Piwik\Config;
 use Piwik\Development;
 use Piwik\Plugin\Manager;
@@ -20,6 +21,13 @@ use Piwik\Plugin\Manager;
  */
 class ContainerFactory
 {
+    /**
+     * TODO
+     *
+     * @var PluginList
+     */
+    private $plugins;
+
     /**
      * Optional environment config to load.
      *
@@ -33,10 +41,13 @@ class ContainerFactory
     private $definitions;
 
     /**
+     * @param PluginList $plugins
      * @param string|null $environment Optional environment config to load.
+     * @param array $definitions
      */
-    public function __construct($environment = null, array $definitions = array())
+    public function __construct(PluginList $plugins, $environment = null, array $definitions = array())
     {
+        $this->plugins = $plugins;
         $this->environment = $environment;
         $this->definitions = $definitions;
     }
@@ -95,9 +106,7 @@ class ContainerFactory
 
     private function addPluginConfigs(ContainerBuilder $builder)
     {
-        $plugins = Manager::getInstance()->getActivatedPluginsFromConfig();
-
-        foreach ($plugins as $plugin) {
+        foreach ($this->plugins->getActivatedPlugins() as $plugin) {
             $file = Manager::getPluginsDirectory() . $plugin . '/config/config.php';
 
             if (! file_exists($file)) {

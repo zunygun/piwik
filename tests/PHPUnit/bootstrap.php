@@ -1,5 +1,6 @@
 <?php
 
+use Piwik\Application\Bootstrap;
 use Piwik\Container\StaticContainer;
 use Piwik\Http;
 use Piwik\Intl\Locale;
@@ -43,7 +44,8 @@ if (getenv('PIWIK_USE_XHPROF') == 1) {
 }
 
 // setup container for tests
-StaticContainer::setEnvironment('test');
+$initialBootstrapper = new Bootstrap('test');
+$initialBootstrapper->init();
 
 \Piwik\Config::getInstance()->setTestEnvironment();
 

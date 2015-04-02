@@ -8,6 +8,7 @@
 namespace Piwik\Tests\Framework;
 
 use Piwik\Access;
+use Piwik\Application\Bootstrap;
 use Piwik\Cache\Backend\File;
 use Piwik\Cache as PiwikCache;
 use Piwik\Common;
@@ -97,6 +98,11 @@ class Fixture extends \PHPUnit_Framework_Assert
     public $testEnvironment = null;
 
     /**
+     * @var Bootstrap
+     */
+    private $piwikEnvironment = null;
+
+    /**
      * @return string
      */
     protected static function getPythonBinary()
@@ -141,6 +147,9 @@ class Fixture extends \PHPUnit_Framework_Assert
 
     public function performSetUp($setupEnvironmentOnly = false)
     {
+        $this->piwikEnvironment = new Bootstrap('test');
+        $this->piwikEnvironment->init();
+
         try {
             if ($this->createConfig) {
                 Config::getInstance()->setTestEnvironment();
