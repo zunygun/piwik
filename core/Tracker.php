@@ -92,7 +92,6 @@ class Tracker
 
     public function main(Handler $handler, RequestSet $requestSet)
     {
-        echo print_r(\Piwik\Config::getInstance()->database, true);
         try {
             $this->init();
             $handler->init($this, $requestSet);

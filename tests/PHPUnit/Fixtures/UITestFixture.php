@@ -106,6 +106,8 @@ class UITestFixture extends SqlDump
             array('page-6.html', 'page-3.html', ''),
         );
 
+        echo "Used token auth: " . self::getTokenAuth()."\n";
+
         $date = Date::factory('yesterday');
         $t = self::getTracker($idSite = 3, $dateTime = $date->getDatetime(), $defaultInit = true);
         $t->enableBulkTracking();
