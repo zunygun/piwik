@@ -20,8 +20,8 @@
         </a>
     </div>
     <div class="search">
-        <input ng-model="adminSites.searchTerm" piwik-onenter="adminSites.searchSite(adminSites.searchTerm)"
+        <input ng-model="adminSites.search" piwik-onenter="adminSites.searchSite(adminSites.search)"
                placeholder="{{ 'Actions_SubmenuSitesearch' | translate }}" type="text">
-        <a class="submit" ng-click="adminSites.searchSite(adminSites.searchTerm)">{{ 'General_Search'|translate }}</a>
+        <a class="submit" ng-click="adminSites.searchSite(adminSites.search)">{{ 'General_Search'|translate }}</a>
     </div>
 </div>

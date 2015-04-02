@@ -22,11 +22,15 @@
         </tr>
         </thead>
         <tbody>
-            <tr
-                    sites-manager-scroll
-                    ng-controller="SitesManagerSiteController"
-                    ng-repeat="site in adminSites.sites"
-                    ng-include="'plugins/SitesManager/templates/sites-list/site-fields.html?cb=' + cacheBuster">
+            <tr ng-show="adminSites.searchTerm && 0 === adminSites.sites.length && !adminSites.isLoading">
+                <td colspan="12">
+                    {{ 'SitesManager_NotFound'|translate }} <strong>{{ adminSites.searchTerm }}</strong>
+                </td>
+            </tr>
+            <tr sites-manager-scroll
+                ng-controller="SitesManagerSiteController"
+                ng-repeat="site in adminSites.sites"
+                ng-include="'plugins/SitesManager/templates/sites-list/site-fields.html?cb=' + cacheBuster">
             </tr>
         </tbody>
     </table>

@@ -10,6 +10,7 @@
     {
         var model = {
             sites        : [],
+            searchTerm   : '',
             isLoading    : false,
             pageSize     : 25,
             currentPage  : 0,
@@ -65,8 +66,9 @@
 
         function searchSite (term)
         {
+            model.searchTerm = term;
             setCurrentPage(0);
-            fetchLimitedSitesWithAdminAccess(term);
+            fetchLimitedSitesWithAdminAccess();
         }
 
         function fetchLimitedSitesWithAdminAccess(searchTerm)
@@ -84,9 +86,9 @@
                 filter_limit: model.pageSize,
             };
 
-            if (searchTerm) {
+            if (model.searchTerm) {
                 params['filter_column[]'] = ['name', 'main_url', 'idsite'];
-                params.filter_pattern = searchTerm;
+                params.filter_pattern = model.searchTerm;
             }
 
             return piwikApi.fetch(params).then(function (sites) {
@@ -96,11 +98,7 @@
                     return;
                 }
 
-                if (0 === sites.length && !searchTerm) {
-                    model.previousPage(); // we must have reached the end
-                } else {
-                    setSites(sites);
-                }
+                setSites(sites);
 
             }, onError)['finally'](function () {
                 model.isLoading = false;

@@ -326,5 +326,6 @@ class SitesManager extends \Piwik\Plugin
         $translationKeys[] = "SitesManager_AddSite";
         $translationKeys[] = "Goals_Ecommerce";
         $translationKeys[] = "SitesManager_SitesPagination";
+        $translationKeys[] = "SitesManager_NotFound";
     }
 }
