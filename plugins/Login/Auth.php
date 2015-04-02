@@ -50,13 +50,16 @@ class Auth implements \Piwik\Auth
         if (is_null($this->login)) {
             echo "in first branch\n";
             try {
+                echo "1\n";@ob_flush();
                 $model = new Model();
+                echo "2\n";@ob_flush();
                 $user  = $model->getUserByTokenAuth($this->token_auth);
+                echo "3\n";@ob_flush();
             } catch (\Exception $ex) {
                 echo $ex->getMessage() . "\n" . $ex->getTraceAsString()."\n";
                 throw $ex;
             }
-echo "user found: " . print_r($user, true);
+echo "user found: " . print_r($user, true);@ob_flush();
             if (!empty($user['login'])) {
                 $code = $user['superuser_access'] ? AuthResult::SUCCESS_SUPERUSER_AUTH_CODE : AuthResult::SUCCESS;
 
