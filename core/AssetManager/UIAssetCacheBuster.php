@@ -27,7 +27,6 @@ class UIAssetCacheBuster extends Singleton
      */
     public function piwikVersionBasedCacheBuster($pluginNames = false)
     {
-        return rand(1, 100000);
         $masterFile = PIWIK_INCLUDE_PATH . '/.git/refs/heads/master';
         $currentGitHash = file_exists($masterFile) ? @file_get_contents($masterFile) : null;
 
@@ -50,7 +49,6 @@ class UIAssetCacheBuster extends Singleton
      */
     public function md5BasedCacheBuster($content)
     {
-        return rand(1, 100000);
         return md5($content);
     }
 }
