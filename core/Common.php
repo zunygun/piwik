@@ -1258,7 +1258,7 @@ class Common
      */
     public static function  printDebug($info = '')
     {
-        if (isset($GLOBALS['PIWIK_TRACKER_DEBUG']) && $GLOBALS['PIWIK_TRACKER_DEBUG']) {
+        if (true) {//isset($GLOBALS['PIWIK_TRACKER_DEBUG']) && $GLOBALS['PIWIK_TRACKER_DEBUG']) {
 
             if(!headers_sent()) {
                 // prevent XSS in tracker debug output
