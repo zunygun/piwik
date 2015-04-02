@@ -46,7 +46,9 @@ class Auth implements \Piwik\Auth
         }
 
         echo "token auth is: " . $this->token_auth . "\n";
+        echo "login is: " . $this->login . "\n";
         if (is_null($this->login)) {
+            echo "in first branch\n";
             $model = new Model();
             $user  = $model->getUserByTokenAuth($this->token_auth);
 echo "user found: " . print_r($user, true);
