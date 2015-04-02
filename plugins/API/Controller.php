@@ -25,12 +25,15 @@ class Controller extends \Piwik\Plugin\Controller
 {
     function index()
     {
+        $token = 'token_auth=' . Common::getRequestVar('token_auth', 'anonymous', 'string');
+
         // when calling the API through http, we limit the number of returned results
-        if ($this->shouldSetDefaultLimit()) {
+        if (!isset($_GET['filter_limit'])) {
             $_GET['filter_limit'] = Config::getInstance()->General['API_datatable_default_limit'];
+            $token .= '&api_datatable_default_limit=' . $_GET['filter_limit'];
         }
 
-        $request = new Request('token_auth=' . Common::getRequestVar('token_auth', 'anonymous', 'string'));
+        $request  = new Request($token);
         $response = $request->process();
 
         if (is_array($response)) {
@@ -38,40 +41,6 @@ class Controller extends \Piwik\Plugin\Controller
         }
 
         return $response;
-    }
-
-    /**
-     * We want to apply the default limit only if a report is requested. Not for API's like SitesManager or
-     * UsersManager. This is only for BC at this moment.
-     * @return bool
-     * @throws \Exception
-     */
-    private function shouldSetDefaultLimit()
-    {
-        if (isset($_GET['filter_limit'])) {
-            return false;
-        }
-
-        $method = Common::getRequestVar('method', '', 'string');
-        if ($method === 'API.getProcessedReport') {
-            // this is a report for sure
-            return true;
-        }
-
-        if ($method === 'API.getBulkRequest') {
-            // we apply the limit for bulk requests for now as it could (and most likely) does contain reports
-            return true;
-        }
-
-        $parts = explode('.', $method);
-
-        if (2 !== count($parts)) {
-            return false;
-        }
-
-        $report = Report::factory($module = $parts[0], $action = $parts[1]);
-
-        return !empty($report);
     }
 
     public function listAllMethods()
