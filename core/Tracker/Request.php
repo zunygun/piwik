@@ -135,8 +135,6 @@ class Request
             return false;
         }
 
-        echo "loaded plugins: " . implode(", ", \Piwik\Plugin\Manager::getInstance()->getLoadedPluginsName())."\n";
-
         Piwik::postEvent('Request.initAuthenticationObject');
 
         /** @var \Piwik\Auth $auth */

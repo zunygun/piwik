@@ -48,6 +48,8 @@ class UITestFixture extends SqlDump
             "idsite = 1"
         );
 
+        echo "Used token auth: " . self::getTokenAuth()."\n";@ob_flush();
+
         $this->addOverlayVisits();
         $this->addNewSitesForSiteSelector();
 
@@ -105,8 +107,6 @@ class UITestFixture extends SqlDump
             array('', 'page-1.html', ''),
             array('page-6.html', 'page-3.html', ''),
         );
-
-        echo "Used token auth: " . self::getTokenAuth()."\n";
 
         $date = Date::factory('yesterday');
         $t = self::getTracker($idSite = 3, $dateTime = $date->getDatetime(), $defaultInit = true);
