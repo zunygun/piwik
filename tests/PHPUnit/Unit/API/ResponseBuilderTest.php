@@ -310,11 +310,15 @@ class ResponseBuilderTest extends \PHPUnit_Framework_TestCase
         $builder  = new ResponseBuilder('php', array(
             'serialize' => 0,
             'filter_limit' => $limit,
+            'filter_offset' => 3,
             'showColumns' => 'test'
         ));
         $response = $builder->getResponse($input);
 
-        $this->assertCount($limit, $response);
-        $this->assertEquals(array('test' => 'two0'), array_shift($response));
+        $this->assertEquals(array(
+            0 => array('test' => 'two3'),
+            1 => array('test' => 'two4'),
+            2 => array('test' => 'two5'),
+        ), $response);
     }
 }

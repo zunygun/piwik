@@ -74,7 +74,12 @@
 
                 initKeepURLFragmentsList();
 
-                initSiteList();
+                adminSites.fetchLimitedSitesWithAdminAccess();
+                sitesManagerAPI.getSitesIdWithAdminAccess(function (siteIds) {
+                    if (siteIds && siteIds.length) {
+                        $scope.totalNumberOfSites = siteIds.length;
+                    }
+                });
 
                 triggerAddSiteIfRequested();
             });
@@ -218,11 +223,6 @@
             });
 
             return sitesInEditMode[0];
-        };
-
-        var initSiteList = function () {
-
-            adminSites.fetchLimitedSitesWithAdminAccess();
         };
 
         var initCurrencyList = function () {

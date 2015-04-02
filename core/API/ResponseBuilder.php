@@ -211,7 +211,7 @@ class ResponseBuilder
             $offset = Common::getRequestVar('filter_offset', '0', 'integer', $this->request);
 
             if (-1 !== $limit) {
-                $array = array_slice($array, $offset, $limit, $isAssoc);
+                $array = array_slice($array, $offset, $limit, $firstKey !== 0);
             }
         }
 
