@@ -52,18 +52,24 @@ class Controller extends \Piwik\Plugin\Controller
             return false;
         }
 
-        $method = Common::getRequestVar('module', '', 'string');
+        $method = Common::getRequestVar('method', '', 'string');
         if ($method === 'API.getProcessedReport') {
             // this is a report for sure
             return true;
         }
 
         if ($method === 'API.getBulkRequest') {
+            // we apply the limit for bulk requests for now as it could (and most likely) does contain reports
             return true;
         }
 
-        list($module, $action) = explode('.', $method);
-        $report = Report::factory($module, $action);
+        $parts = explode('.', $method);
+
+        if (2 !== count($parts)) {
+            return false;
+        }
+
+        $report = Report::factory($module = $parts[0], $action = $parts[1]);
 
         return !empty($report);
     }
