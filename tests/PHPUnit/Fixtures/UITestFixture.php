@@ -48,7 +48,7 @@ class UITestFixture extends SqlDump
             "idsite = 1"
         );
 
-        echo "Used token auth: " . self::getTokenAuth()."\n";@ob_flush();
+        echo print_r(Db::fetchAll("SHOW TABLE FROM piwik_tests LIKE 'user'"), true);@ob_flush();
 
         $this->addOverlayVisits();
         $this->addNewSitesForSiteSelector();
