@@ -73,6 +73,7 @@ class Config extends Singleton
         $this->pathLocal = $pathLocal ?: self::getLocalConfigPath();
 
         $this->settings = new IniFileChain();
+        $this->reload();
     }
 
     /**
