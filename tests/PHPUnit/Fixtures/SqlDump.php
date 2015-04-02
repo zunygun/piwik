@@ -61,6 +61,7 @@ class SqlDump extends Fixture
         $password = Config::getInstance()->database['password'];
         Config::getInstance()->database['tables_prefix'] = $this->tablesPrefix;
 
+        echo "Loading SQL dump $defalatedDumpPath to {$this->dbName} with prefix {$this->tablesPrefix}. [user = $user, password = $password].\n";@ob_flush();
         $cmd = "mysql -u \"$user\" \"--password=$password\" {$this->dbName} < \"" . $deflatedDumpPath . "\" 2>&1";
         exec($cmd, $output, $return);
         if ($return !== 0) {

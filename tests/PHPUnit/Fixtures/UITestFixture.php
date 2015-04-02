@@ -48,8 +48,6 @@ class UITestFixture extends SqlDump
             "idsite = 1"
         );
 
-        echo print_r(Db::fetchAll("SHOW TABLE STATUS FROM piwik_tests LIKE 'user'"), true);@ob_flush();
-
         $this->addOverlayVisits();
         $this->addNewSitesForSiteSelector();
 
