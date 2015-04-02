@@ -11,7 +11,12 @@
             <span style="cursor:pointer;">&#171; {{ 'General_Previous'|translate }}</span>
         </a>
         <span class="counter" ng-show="adminSites.hasPrev || adminSites.hasNext">
-            {{ 'General_Pagination'|translate:adminSites.offsetStart:adminSites.offsetEnd:totalNumberOfSites }}
+            <span ng-show="adminSites.searchTerm">
+                {{ 'General_PaginationWithoutTotal'|translate:adminSites.offsetStart:adminSites.offsetEnd }}
+            </span>
+            <span ng-show="!adminSites.searchTerm">
+                {{ 'General_Pagination'|translate:adminSites.offsetStart:adminSites.offsetEnd:totalNumberOfSites }}
+            </span>
         </span>
         <a class="submit next"
            ng-class="{'visible': adminSites.hasNext, 'hidden': !adminSites.hasNext}"

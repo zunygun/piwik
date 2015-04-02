@@ -35,9 +35,11 @@
         {
             model.sites = sites;
 
-            var numSites    = sites.length;
-            model.offsetEnd = model.offsetStart + numSites;
-            model.hasNext   = numSites === model.pageSize;
+            var numSites      = sites.length;
+            model.offsetStart = model.currentPage * model.pageSize;
+            model.offsetEnd   = model.offsetStart + numSites;
+            model.hasPrev     = model.currentPage >= 1;
+            model.hasNext     = numSites === model.pageSize;
         }
 
         function setCurrentPage(page)
@@ -47,9 +49,6 @@
             }
 
             model.currentPage = page;
-            model.offsetStart = model.currentPage * model.pageSize;
-            model.offsetEnd   = model.offsetStart + model.pageSize;
-            model.hasPrev     = page >= 1;
         }
 
         function previousPage()
